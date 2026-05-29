@@ -1,0 +1,40 @@
+# FastAPI
+fastapi==0.104.1
+uvicorn==0.24.0
+pydantic==2.5.2
+pydantic-settings==2.2.1
+
+# Database
+sqlalchemy==2.0.23
+pymysql==1.1.0
+cryptography==41.0.7
+
+# Redis
+redis==5.0.1
+
+# Vector database
+pymilvus==2.6.13
+
+# LLM and embeddings
+transformers==4.35.2
+torch==2.2.2
+FlagEmbedding==1.2.8
+sentence-transformers==2.6.1
+openai==1.30.5
+numpy==1.26.4
+python-dotenv==1.0.0
+
+# PDF processing
+PyMuPDF==1.23.8
+pypdf==4.2.0
+python-docx==1.1.2
+
+# Other tools
+requests==2.31.0
+pydantic-extra-types==2.3.0
+langchain==0.1.1
+nltk==3.8.1
+
+# Runtime helpers
+python-multipart==0.0.6
+aiofiles==23.2.1

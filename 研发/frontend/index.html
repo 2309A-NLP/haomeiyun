@@ -1,0 +1,4903 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>法律智能问答系统</title>
+    <style>
+        :root {
+            --bg: #eef3f7;
+            --bg-soft: #f7fafc;
+            --panel: rgba(250, 252, 253, 0.78);
+            --panel-strong: rgba(255, 255, 255, 0.9);
+            --line: rgba(93, 120, 142, 0.16);
+            --line-strong: rgba(93, 120, 142, 0.24);
+            --text: #243746;
+            --text-soft: #5e7488;
+            --text-faint: #8598a8;
+            --blue-1: #d9e4ed;
+            --blue-2: #b6c7d4;
+            --blue-3: #8fa9bc;
+            --blue-4: #6f8ca4;
+            --blue-5: #55718b;
+            --blue-6: #3f576e;
+            --mint: #dfe9e4;
+            --warm: #f1ece4;
+            --danger: #b96868;
+            --warning: #b99057;
+            --success: #5f8b73;
+            --shadow-lg: 0 30px 80px rgba(63, 87, 110, 0.12);
+            --shadow-md: 0 18px 40px rgba(63, 87, 110, 0.1);
+            --radius-xl: 32px;
+            --radius-lg: 24px;
+            --radius-md: 18px;
+            --radius-sm: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            height: 100vh;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 12% 18%, rgba(171, 193, 208, 0.42), transparent 22%),
+                radial-gradient(circle at 88% 16%, rgba(214, 226, 233, 0.58), transparent 18%),
+                radial-gradient(circle at 80% 82%, rgba(183, 201, 214, 0.36), transparent 24%),
+                linear-gradient(180deg, #f4f8fb 0%, #ecf2f6 52%, #e8eff4 100%);
+            font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: hidden;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::before {
+            background:
+                linear-gradient(120deg, rgba(255, 255, 255, 0.18), transparent 30%),
+                repeating-linear-gradient(
+                    135deg,
+                    rgba(255, 255, 255, 0.18) 0,
+                    rgba(255, 255, 255, 0.18) 1px,
+                    transparent 1px,
+                    transparent 16px
+                );
+            opacity: 0.5;
+        }
+
+        body::after {
+            background:
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.26), transparent 10%),
+                radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.16), transparent 12%);
+            mix-blend-mode: screen;
+        }
+
+        button,
+        input,
+        textarea {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        textarea {
+            resize: none;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        .page-shell {
+            position: relative;
+            z-index: 1;
+            width: min(1680px, calc(100vw - 56px));
+            margin: 0 auto;
+            min-height: 100vh;
+            height: 100vh;
+            padding: 14px 0;
+            overflow: hidden;
+        }
+
+        .glass-panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            backdrop-filter: blur(18px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .view {
+            animation: fadeUp 0.55s ease;
+        }
+
+        .auth-layout {
+            display: grid;
+            grid-template-columns: minmax(520px, 0.95fr) minmax(460px, 0.85fr);
+            gap: 18px;
+            align-items: stretch;
+            min-height: calc(100vh - 28px);
+            height: calc(100vh - 28px);
+        }
+
+        .hero-panel,
+        .auth-card {
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+        }
+
+        .hero-panel {
+            position: relative;
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background:
+                linear-gradient(145deg, rgba(255, 255, 255, 0.62), rgba(221, 232, 239, 0.6)),
+                linear-gradient(180deg, #eff5f8 0%, #dbe5ec 100%);
+        }
+
+        .hero-panel::before,
+        .hero-panel::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(2px);
+        }
+
+        .hero-panel::before {
+            width: 280px;
+            height: 280px;
+            right: -60px;
+            top: -30px;
+            background: radial-gradient(circle, rgba(143, 169, 188, 0.35), rgba(143, 169, 188, 0) 70%);
+        }
+
+        .hero-panel::after {
+            width: 220px;
+            height: 220px;
+            left: -40px;
+            bottom: -60px;
+            background: radial-gradient(circle, rgba(220, 234, 241, 0.8), rgba(220, 234, 241, 0) 72%);
+        }
+
+        .brand-row,
+        .app-brand-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-mark {
+            width: 48px;
+            height: 48px;
+            border-radius: 18px;
+            background: linear-gradient(145deg, var(--blue-4), var(--blue-6));
+            color: #f7fafc;
+            display: grid;
+            place-items: center;
+            font-family: "Georgia", "Times New Roman", serif;
+            font-size: 22px;
+            letter-spacing: 0.08em;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .brand-copy small,
+        .app-brand-copy small {
+            display: block;
+            color: var(--text-faint);
+            font-size: 12px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .brand-copy strong,
+        .app-brand-copy strong {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .ambient-pill,
+        .date-pill,
+        .status-pill,
+        .role-tag,
+        .meta-chip,
+        .risk-chip,
+        .suggest-chip,
+        .shortcut-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 999px;
+            padding: 10px 14px;
+            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.62);
+            color: var(--text-soft);
+            font-size: 13px;
+            line-height: 1;
+        }
+
+        .ambient-pill::before,
+        .status-pill::before,
+        .meta-chip::before,
+        .risk-chip::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--blue-4);
+        }
+
+        .hero-copy {
+            position: relative;
+            z-index: 1;
+            max-width: 520px;
+            margin-top: 18px;
+        }
+
+        .hero-copy h1 {
+            margin: 0 0 18px;
+            font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+            font-size: clamp(30px, 3.6vw, 46px);
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            line-height: 1.1;
+            color: #243746;
+        }
+
+        .hero-copy p {
+            margin: 0;
+            max-width: 480px;
+            color: var(--text-soft);
+            font-size: 15px;
+            line-height: 1.9;
+        }
+
+        .hero-metrics {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin: 22px 0;
+        }
+
+        .metric-card {
+            padding: 18px;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.58);
+            border: 1px solid rgba(93, 120, 142, 0.12);
+            min-height: 124px;
+        }
+
+        .metric-card strong {
+            display: block;
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--blue-6);
+            margin-bottom: 10px;
+        }
+
+        .metric-card span {
+            display: block;
+            color: var(--text-soft);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .hero-highlights {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .highlight-card {
+            padding: 20px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.56);
+            border: 1px solid rgba(93, 120, 142, 0.12);
+        }
+
+        .highlight-card strong {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: var(--text);
+        }
+
+        .highlight-card p {
+            margin: 0;
+            color: var(--text-soft);
+            line-height: 1.85;
+            font-size: 14px;
+        }
+
+        .floating-note {
+            position: absolute;
+            right: 44px;
+            bottom: 44px;
+            width: min(280px, 42%);
+            padding: 20px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.68);
+            border: 1px solid rgba(93, 120, 142, 0.16);
+            box-shadow: var(--shadow-md);
+            backdrop-filter: blur(10px);
+            animation: floatCard 5s ease-in-out infinite;
+        }
+
+        .floating-note strong {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 15px;
+            color: var(--text);
+        }
+
+        .floating-note p {
+            margin: 0;
+            color: var(--text-soft);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .auth-card {
+            padding: 26px;
+            display: flex;
+            align-items: stretch;
+            background:
+                linear-gradient(180deg, rgba(251, 253, 254, 0.86), rgba(242, 247, 250, 0.84));
+            min-height: 0;
+        }
+
+        .auth-inner {
+            width: 100%;
+            border-radius: 28px;
+            padding: 28px;
+            background: rgba(255, 255, 255, 0.68);
+            border: 1px solid rgba(93, 120, 142, 0.12);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 24px;
+            min-height: 0;
+            overflow: auto;
+        }
+
+        .compact-hero-copy {
+            margin-top: 22px;
+        }
+
+        .auth-header {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .auth-header h2 {
+            margin: 0;
+            font-size: 34px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .auth-header p {
+            margin: 0;
+            color: var(--text-soft);
+            line-height: 1.85;
+        }
+
+        .auth-tabs {
+            display: inline-grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+            padding: 6px;
+            border-radius: 999px;
+            background: rgba(217, 228, 237, 0.52);
+            width: 100%;
+        }
+
+        .auth-tab {
+            border: 0;
+            border-radius: 999px;
+            background: transparent;
+            color: var(--text-soft);
+            padding: 12px 16px;
+            font-weight: 600;
+            transition: 0.25s ease;
+        }
+
+        .auth-tab.active {
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--blue-6);
+            box-shadow: 0 10px 24px rgba(63, 87, 110, 0.1);
+        }
+
+        .auth-form {
+            display: grid;
+            gap: 16px;
+        }
+
+        .field {
+            display: grid;
+            gap: 9px;
+        }
+
+        .field label {
+            font-size: 14px;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .field input,
+        .field select,
+        .field textarea,
+        .composer-card textarea,
+        .composer-card input,
+        .search-input {
+            width: 100%;
+            border: 1px solid rgba(93, 120, 142, 0.18);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.88);
+            padding: 16px 18px;
+            color: var(--text);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        }
+
+        .field input::placeholder,
+        .composer-card textarea::placeholder,
+        .composer-card input::placeholder,
+        .search-input::placeholder {
+            color: var(--text-faint);
+        }
+
+        .field input:focus,
+        .field select:focus,
+        .field textarea:focus,
+        .composer-card textarea:focus,
+        .composer-card input:focus,
+        .search-input:focus {
+            outline: none;
+            border-color: rgba(85, 113, 139, 0.45);
+            box-shadow: 0 0 0 5px rgba(143, 169, 188, 0.18);
+            transform: translateY(-1px);
+        }
+
+        .field input[type="file"] {
+            padding: 12px 14px;
+        }
+
+        .field-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .primary-btn,
+        .secondary-btn,
+        .ghost-btn,
+        .session-action-btn,
+        .role-card,
+        .session-item,
+        .suggest-chip,
+        .shortcut-chip,
+        .empty-chip {
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .primary-btn,
+        .secondary-btn,
+        .ghost-btn,
+        .session-action-btn {
+            border: 0;
+            min-height: 52px;
+            border-radius: 999px;
+            padding: 0 20px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, #6f8ca4 0%, #4e6a83 100%);
+            color: #f7fafc;
+            box-shadow: 0 16px 32px rgba(79, 106, 131, 0.22);
+        }
+
+        .primary-btn:hover,
+        .role-card:hover,
+        .session-item:hover,
+        .suggest-chip:hover,
+        .shortcut-chip:hover,
+        .empty-chip:hover {
+            transform: translateY(-2px);
+        }
+
+        .secondary-btn {
+            background: rgba(255, 255, 255, 0.82);
+            color: var(--blue-6);
+            border: 1px solid rgba(93, 120, 142, 0.16);
+        }
+
+        .ghost-btn,
+        .session-action-btn {
+            background: rgba(255, 255, 255, 0.56);
+            color: var(--text-soft);
+            border: 1px solid rgba(93, 120, 142, 0.14);
+        }
+
+        .helper-copy {
+            color: var(--text-faint);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .auth-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .auth-points {
+            display: grid;
+            gap: 10px;
+        }
+
+        .auth-point {
+            display: flex;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 18px;
+            background: rgba(241, 246, 249, 0.8);
+            color: var(--text-soft);
+        }
+
+        .auth-point strong {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        .auth-point span {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--blue-4);
+            flex: 0 0 auto;
+            margin-top: 6px;
+        }
+
+        .app-shell {
+            display: grid;
+            gap: 18px;
+            min-height: calc(100vh - 28px);
+            height: calc(100vh - 28px);
+            overflow: hidden;
+        }
+
+        .app-topbar {
+            padding: 16px 20px;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+        }
+
+        .topbar-brief {
+            max-width: 420px;
+            padding: 12px 16px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.52);
+            border: 1px solid rgba(93, 120, 142, 0.12);
+            color: var(--text-soft);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .app-topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .view-switch {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px;
+            border-radius: 999px;
+            background: rgba(217, 228, 237, 0.6);
+            border: 1px solid rgba(93, 120, 142, 0.14);
+        }
+
+        .view-switch-btn {
+            border: 0;
+            min-height: 38px;
+            padding: 0 16px;
+            border-radius: 999px;
+            background: transparent;
+            color: var(--text-soft);
+            font-size: 13px;
+            font-weight: 600;
+            transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .view-switch-btn.active {
+            background: rgba(255, 255, 255, 0.92);
+            color: var(--blue-6);
+            box-shadow: 0 10px 20px rgba(63, 87, 110, 0.12);
+        }
+
+        .app-layout {
+            display: grid;
+            grid-template-columns: 300px minmax(0, 1fr);
+            gap: 16px;
+            min-height: calc(100vh - 116px);
+            height: calc(100vh - 116px);
+            align-items: stretch;
+        }
+
+        .app-rail,
+        .stage-shell,
+        .chat-stage,
+        .knowledge-stage {
+            min-height: 0;
+        }
+
+        .stage-shell {
+            display: grid;
+            min-width: 0;
+        }
+
+        .app-rail {
+            display: grid;
+            grid-template-rows: auto auto minmax(0, 1fr);
+            gap: 14px;
+        }
+
+        .rail-card,
+        .workspace-card,
+        .thread-card,
+        .composer-card {
+            border-radius: 24px;
+            padding: 16px;
+            background: rgba(252, 253, 254, 0.76);
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow-md);
+            backdrop-filter: blur(14px);
+        }
+
+        .account-card {
+            background: linear-gradient(180deg, rgba(250, 252, 253, 0.84), rgba(239, 246, 249, 0.92));
+        }
+
+        .roles-card,
+        .sessions-card {
+            flex: 1 1 auto;
+            min-height: 0;
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
+        }
+
+        .roles-card {
+            max-height: 320px;
+        }
+
+        .sessions-card {
+            min-height: 260px;
+        }
+
+        .sidebar-title,
+        .workspace-kicker,
+        .empty-state small,
+        .form-meta {
+            color: var(--text-faint);
+            font-size: 12px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
+
+        .profile-card-header,
+        .session-card-head,
+        .composer-top,
+        .workspace-top,
+        .thread-head,
+        .role-board-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 14px;
+        }
+
+        .profile-card-header h3 {
+            margin: 6px 0 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .profile-card-header p,
+        .session-card-head p,
+        .role-board-head p,
+        .workspace-description,
+        .session-empty,
+        .empty-state p,
+        .note,
+        .composer-note,
+        .message-citation p,
+        .message-disclaimer {
+            margin: 0;
+            color: var(--text-soft);
+            line-height: 1.8;
+        }
+
+        .stat-box,
+        .toggle-box,
+        .mini-box {
+            padding: 14px;
+            border-radius: 18px;
+            background: rgba(239, 245, 248, 0.9);
+            border: 1px solid rgba(93, 120, 142, 0.1);
+        }
+
+        .stat-box strong {
+            display: block;
+            color: var(--blue-6);
+            margin-bottom: 6px;
+            font-size: 22px;
+        }
+
+        .muted {
+            color: var(--text-faint);
+        }
+
+        .mini-box strong {
+            display: block;
+            margin-top: 8px;
+            color: var(--text);
+            font-size: 15px;
+            line-height: 1.6;
+            word-break: break-all;
+        }
+
+        .session-head-actions,
+        .role-list,
+        .session-list,
+        .suggestion-row,
+        .shortcut-row,
+        .empty-chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .role-grid {
+            display: grid;
+            gap: 8px;
+            margin-top: 10px;
+            align-content: start;
+        }
+
+        .role-card {
+            width: 100%;
+            border: 1px solid rgba(93, 120, 142, 0.12);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.82);
+            padding: 12px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .role-card:hover,
+        .session-item:hover,
+        .suggest-chip:hover,
+        .shortcut-chip:hover,
+        .empty-chip:hover {
+            transform: translateY(-2px);
+        }
+
+        .role-card.active {
+            background: linear-gradient(145deg, rgba(214, 227, 236, 0.98), rgba(245, 249, 251, 0.98));
+            border-color: rgba(93, 120, 142, 0.28);
+            box-shadow: 0 16px 28px rgba(63, 87, 110, 0.12);
+        }
+
+        .role-card-select {
+            width: 100%;
+            border: 0;
+            background: transparent;
+            padding: 0;
+            text-align: left;
+            display: block;
+        }
+
+        .role-head {
+            display: block;
+        }
+
+        .role-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .role-desc,
+        .session-preview {
+            color: var(--text-soft);
+            font-size: 12px;
+            line-height: 1.65;
+        }
+
+        .custom-role-head,
+        .role-card-top,
+        .role-card-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .custom-role-panel {
+            display: grid;
+            gap: 10px;
+        }
+
+        .custom-role-head {
+            color: var(--text-faint);
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .role-count-badge {
+            min-width: 28px;
+            padding: 4px 9px;
+            border-radius: 999px;
+            background: rgba(229, 237, 243, 0.92);
+            border: 1px solid rgba(93, 120, 142, 0.12);
+            color: var(--blue-6);
+            text-align: center;
+            font-weight: 700;
+            font-size: 11px;
+        }
+
+        .role-card-meta,
+        .role-card-line,
+        .custom-role-empty {
+            color: var(--text-soft);
+            font-size: 12px;
+            line-height: 1.75;
+        }
+
+        .custom-role-empty {
+            padding: 14px 0 4px;
+        }
+
+        .role-source-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 24px;
+            padding: 0 10px;
+            border-radius: 999px;
+            background: rgba(217, 228, 237, 0.62);
+            color: var(--blue-6);
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .role-card-actions {
+            margin-top: 12px;
+            justify-content: flex-end;
+        }
+
+        .mini-action-btn,
+        .mini-danger-btn {
+            border: 1px solid rgba(93, 120, 142, 0.12);
+            background: rgba(255, 255, 255, 0.78);
+            color: var(--text-soft);
+            border-radius: 999px;
+            min-height: 30px;
+            padding: 0 12px;
+            font-size: 11px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mini-danger-btn {
+            border-color: rgba(190, 103, 103, 0.18);
+            background: rgba(255, 245, 245, 0.92);
+            color: #b95f5f;
+        }
+
+        .role-editor-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 24;
+            padding: 24px;
+            display: grid;
+            place-items: center;
+            background: rgba(36, 55, 70, 0.28);
+            backdrop-filter: blur(10px);
+        }
+
+        .role-editor-dialog {
+            width: min(760px, calc(100vw - 32px));
+            max-height: calc(100vh - 48px);
+            overflow: auto;
+            border-radius: 30px;
+            padding: 24px;
+            background: rgba(250, 252, 253, 0.96);
+            border: 1px solid rgba(93, 120, 142, 0.16);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .role-editor-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        .role-editor-head h3 {
+            margin: 6px 0 0;
+            font-size: 28px;
+            color: var(--text);
+        }
+
+        .role-editor-copy,
+        .role-editor-note {
+            margin: 8px 0 0;
+            color: var(--text-soft);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .role-editor-form {
+            display: grid;
+            gap: 16px;
+        }
+
+        .role-editor-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .role-editor-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .role-editor-footer-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            margin-left: auto;
+        }
+
+        .role-tag,
+        .meta-chip,
+        .risk-chip,
+        .suggest-chip,
+        .shortcut-chip,
+        .empty-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 999px;
+            padding: 9px 13px;
+            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.78);
+            color: var(--text-soft);
+            font-size: 12px;
+            line-height: 1.4;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .ambient-pill::before,
+        .status-pill::before,
+        .meta-chip::before,
+        .risk-chip::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--blue-4);
+        }
+
+        .risk-chip.low::before {
+            background: var(--success);
+        }
+
+        .risk-chip.medium::before {
+            background: var(--warning);
+        }
+
+        .risk-chip.high::before {
+            background: var(--danger);
+        }
+
+        .app-rail,
+        .session-stack,
+        .thread-scroll {
+            min-height: 0;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+
+        .app-rail {
+            padding-right: 6px;
+            scrollbar-color: rgba(93, 120, 142, 0.2) transparent;
+        }
+
+        .session-stack {
+            display: grid;
+            gap: 12px;
+            min-height: 160px;
+            align-content: start;
+            padding-right: 4px;
+            scrollbar-color: rgba(93, 120, 142, 0.18) transparent;
+        }
+
+        .app-rail::-webkit-scrollbar,
+        .session-stack::-webkit-scrollbar,
+        .thread-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .app-rail::-webkit-scrollbar-thumb,
+        .session-stack::-webkit-scrollbar-thumb,
+        .thread-scroll::-webkit-scrollbar-thumb {
+            background: rgba(93, 120, 142, 0.2);
+            border-radius: 999px;
+        }
+
+        .session-item {
+            border: 1px solid rgba(93, 120, 142, 0.12);
+            border-radius: 22px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(246, 250, 252, 0.88));
+            padding: 15px 16px;
+            display: grid;
+            gap: 10px;
+            text-align: left;
+            cursor: pointer;
+            box-shadow: 0 10px 24px rgba(63, 87, 110, 0.06);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .session-item.active {
+            border-color: rgba(111, 140, 164, 0.34);
+            background: linear-gradient(180deg, rgba(231, 239, 245, 0.98), rgba(219, 231, 239, 0.94));
+            box-shadow: 0 16px 30px rgba(79, 106, 131, 0.12);
+        }
+
+        .session-meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            align-items: flex-start;
+            color: var(--text-faint);
+            font-size: 11px;
+            letter-spacing: 0.02em;
+        }
+
+        .session-meta span:first-child {
+            color: var(--blue-6);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 9px;
+            border-radius: 999px;
+            background: rgba(229, 237, 243, 0.9);
+            border: 1px solid rgba(93, 120, 142, 0.1);
+        }
+
+        .session-meta span:last-child {
+            padding-top: 4px;
+        }
+
+        .session-preview {
+            color: var(--text);
+            font-size: 13px;
+            line-height: 1.7;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .session-item-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .session-delete-btn {
+            border: 1px solid rgba(190, 103, 103, 0.18);
+            background: rgba(255, 245, 245, 0.92);
+            color: #b95f5f;
+            border-radius: 999px;
+            min-height: 30px;
+            padding: 0 12px;
+            font-size: 11px;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .session-delete-btn:hover {
+            background: rgba(255, 236, 236, 0.98);
+        }
+
+        .sessions-card .session-card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+            padding: 2px 2px 6px;
+            border-bottom: 1px solid rgba(93, 120, 142, 0.08);
+        }
+
+        .sessions-card .sidebar-title {
+            font-size: 11px;
+            letter-spacing: 0.12em;
+            line-height: 1.5;
+        }
+
+        .sessions-card .session-head-actions {
+            gap: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-left: auto;
+        }
+
+        .sessions-card .session-action-btn,
+        .sessions-card .ghost-btn {
+            min-height: 34px;
+            padding: 0 12px;
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+
+        .sessions-card .ghost-btn {
+            background: rgba(255, 255, 255, 0.62);
+            color: var(--text-faint);
+            border: 1px solid rgba(93, 120, 142, 0.12);
+        }
+
+        .chat-stage {
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr) auto;
+            gap: 12px;
+            min-width: 0;
+            min-height: calc(100vh - 116px);
+            height: calc(100vh - 116px);
+        }
+
+        .knowledge-stage {
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
+            gap: 12px;
+            min-width: 0;
+            min-height: calc(100vh - 116px);
+            height: calc(100vh - 116px);
+        }
+
+        .knowledge-layout {
+            display: grid;
+            grid-template-columns: minmax(360px, 420px) minmax(0, 1fr);
+            gap: 12px;
+            min-height: 0;
+        }
+
+        .knowledge-form-card,
+        .knowledge-list-card {
+            min-height: 0;
+        }
+
+        .knowledge-form-card {
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
+            gap: 18px;
+        }
+
+        .knowledge-list-card {
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
+            gap: 14px;
+        }
+
+        .knowledge-panel-head,
+        .knowledge-list-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 14px;
+        }
+
+        .knowledge-panel-head h3,
+        .knowledge-list-head h3 {
+            margin: 6px 0 0;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .knowledge-panel-copy {
+            margin: 8px 0 0;
+            color: var(--text-soft);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .knowledge-stat {
+            min-width: 88px;
+            padding: 12px 14px;
+            border-radius: 18px;
+            background: rgba(239, 245, 248, 0.92);
+            border: 1px solid rgba(93, 120, 142, 0.1);
+            text-align: center;
+        }
+
+        .knowledge-stat strong {
+            display: block;
+            color: var(--blue-6);
+            font-size: 22px;
+            line-height: 1.2;
+        }
+
+        .knowledge-stat span {
+            color: var(--text-soft);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .knowledge-form {
+            display: grid;
+            gap: 14px;
+            align-content: start;
+        }
+
+        .knowledge-actions {
+            display: grid;
+            gap: 10px;
+        }
+
+        .knowledge-note {
+            margin: 0;
+            color: var(--text-soft);
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .knowledge-doc-list {
+            min-height: 0;
+            overflow-y: auto;
+            display: grid;
+            gap: 10px;
+            padding-right: 4px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(93, 120, 142, 0.2) transparent;
+        }
+
+        .knowledge-doc-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .knowledge-doc-list::-webkit-scrollbar-thumb {
+            background: rgba(93, 120, 142, 0.2);
+            border-radius: 999px;
+        }
+
+        .knowledge-doc-item {
+            padding: 14px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.78);
+            border: 1px solid rgba(93, 120, 142, 0.12);
+            display: grid;
+            gap: 10px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .knowledge-doc-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(63, 87, 110, 0.08);
+        }
+
+        .knowledge-doc-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .knowledge-doc-title {
+            margin: 0;
+            color: var(--text);
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1.6;
+        }
+
+        .knowledge-doc-meta {
+            margin: 0;
+            color: var(--text-soft);
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .knowledge-status {
+            flex: 0 0 auto;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(228, 237, 243, 0.92);
+            color: var(--blue-6);
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .knowledge-empty {
+            min-height: 100%;
+            display: grid;
+            place-items: center;
+            padding: 18px;
+            border-radius: 20px;
+            background: rgba(241, 246, 249, 0.72);
+            border: 1px dashed rgba(93, 120, 142, 0.18);
+            color: var(--text-soft);
+            font-size: 13px;
+            line-height: 1.8;
+            text-align: center;
+        }
+
+        .workspace-card {
+            background: linear-gradient(160deg, rgba(250, 252, 253, 0.9), rgba(235, 243, 247, 0.92));
+            display: block;
+            padding: 12px 14px;
+        }
+
+        .workspace-main-info {
+            min-width: 0;
+        }
+
+        .workspace-top h1 {
+            margin: 2px 0 4px;
+            font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+            font-size: clamp(16px, 1.35vw, 22px);
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .workspace-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .thread-card {
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
+            min-height: 0;
+            overflow: hidden;
+            background: rgba(252, 253, 254, 0.82);
+        }
+
+        .thread-head {
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(93, 120, 142, 0.1);
+        }
+
+        .thread-head h2 {
+            margin: 0 0 6px;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .thread-scroll {
+            padding-top: 12px;
+            padding-right: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            scrollbar-color: rgba(93, 120, 142, 0.24) transparent;
+        }
+
+        .empty-state {
+            min-height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 28px;
+        }
+
+        .empty-state-card {
+            max-width: 520px;
+            padding: 18px;
+            border-radius: 20px;
+            background: linear-gradient(180deg, rgba(240, 246, 249, 0.96), rgba(255, 255, 255, 0.9));
+            border: 1px solid rgba(93, 120, 142, 0.1);
+        }
+
+        .message {
+            max-width: min(960px, 84%);
+            display: grid;
+            gap: 8px;
+            animation: fadeUp 0.35s ease;
+        }
+
+        .message.user {
+            margin-left: auto;
+            justify-items: end;
+        }
+
+        .message.assistant {
+            margin-right: auto;
+        }
+
+        .message-meta-row {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-faint);
+            font-size: 11px;
+            flex-wrap: wrap;
+        }
+
+        .message-author {
+            font-weight: 700;
+            color: var(--text-soft);
+        }
+
+        .message-bubble {
+            padding: 15px 17px;
+            border-radius: 22px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-size: 14px;
+            line-height: 1.75;
+            box-shadow: 0 14px 28px rgba(63, 87, 110, 0.08);
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(145deg, #6f8ca4 0%, #56728b 100%);
+            color: #f8fbfd;
+            border-bottom-right-radius: 10px;
+        }
+
+        .message.assistant .message-bubble {
+            background: rgba(255, 255, 255, 0.94);
+            color: var(--text);
+            border: 1px solid rgba(93, 120, 142, 0.1);
+            border-bottom-left-radius: 10px;
+        }
+
+        .message-markdown {
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        .message-markdown-streaming {
+            white-space: pre-wrap;
+        }
+
+        .message-markdown h2,
+        .message-markdown h3,
+        .message-markdown p,
+        .message-markdown ul,
+        .message-markdown ol {
+            margin: 0;
+        }
+
+        .message-markdown h2 + *,
+        .message-markdown h3 + *,
+        .message-markdown p + *,
+        .message-markdown ul + *,
+        .message-markdown ol + * {
+            margin-top: 10px;
+        }
+
+        .message-markdown h2 {
+            font-size: 16px;
+            line-height: 1.5;
+            color: var(--blue-6);
+        }
+
+        .message-markdown h3 {
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text);
+        }
+
+        .message-markdown p,
+        .message-markdown li {
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--text);
+            white-space: pre-wrap;
+        }
+
+        .message-markdown ul,
+        .message-markdown ol {
+            padding-left: 20px;
+        }
+
+        .message-markdown li + li {
+            margin-top: 6px;
+        }
+
+        .message-markdown strong {
+            color: var(--blue-6);
+            font-weight: 700;
+        }
+
+        .message-markdown code {
+            padding: 1px 6px;
+            border-radius: 8px;
+            background: rgba(228, 237, 243, 0.9);
+            font-family: "Consolas", "SFMono-Regular", monospace;
+            font-size: 13px;
+        }
+
+        .typing-text {
+            display: inline-flex;
+            gap: 6px;
+            align-items: center;
+            color: var(--text-soft);
+        }
+
+        .typing-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: rgba(111, 140, 164, 0.72);
+            animation: blink 1.2s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.15s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .message-extra,
+        .message-citations {
+            display: grid;
+            gap: 8px;
+        }
+
+        .message-extra-title {
+            color: var(--blue-6);
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.5;
+            margin-top: 4px;
+        }
+
+        .message-citation {
+            padding: 12px 14px;
+            border-radius: 16px;
+            background: rgba(240, 246, 249, 0.88);
+            border: 1px solid rgba(93, 120, 142, 0.1);
+        }
+
+        .message-citation strong {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 13px;
+            color: var(--text);
+        }
+
+        .message-disclaimer {
+            padding: 12px 14px;
+            border-radius: 16px;
+            background: rgba(241, 236, 228, 0.78);
+            border: 1px solid rgba(185, 144, 87, 0.16);
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .composer-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 170px;
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        .composer-main,
+        .composer-side {
+            display: grid;
+            gap: 10px;
+        }
+
+        .composer-card textarea,
+        .field input,
+        .field select,
+        .search-input {
+            width: 100%;
+            border: 1px solid rgba(93, 120, 142, 0.18);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 14px 16px;
+            color: var(--text);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        }
+
+        .composer-card textarea {
+            min-height: 108px;
+            max-height: 196px;
+            font-size: 13px;
+            line-height: 1.72;
+        }
+
+        .field input::placeholder,
+        .composer-card textarea::placeholder,
+        .search-input::placeholder {
+            color: var(--text-faint);
+        }
+
+        .field input:focus,
+        .field select:focus,
+        .composer-card textarea:focus,
+        .search-input:focus {
+            outline: none;
+            border-color: rgba(85, 113, 139, 0.45);
+            box-shadow: 0 0 0 5px rgba(143, 169, 188, 0.18);
+            transform: translateY(-1px);
+        }
+
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .toggle {
+            position: relative;
+            width: 52px;
+            height: 30px;
+            flex: 0 0 auto;
+        }
+
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-track {
+            position: absolute;
+            inset: 0;
+            border-radius: 999px;
+            background: rgba(93, 120, 142, 0.22);
+            transition: 0.25s ease;
+        }
+
+        .toggle-track::after {
+            content: "";
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 4px 10px rgba(36, 55, 70, 0.16);
+            transition: 0.25s ease;
+        }
+
+        .toggle input:checked + .toggle-track {
+            background: rgba(85, 113, 139, 0.82);
+        }
+
+        .toggle input:checked + .toggle-track::after {
+            transform: translateX(22px);
+        }
+
+        .primary-btn,
+        .secondary-btn,
+        .ghost-btn,
+        .session-action-btn,
+        .send-btn {
+            border: 0;
+            min-height: 48px;
+            border-radius: 999px;
+            padding: 0 20px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, #6f8ca4 0%, #4e6a83 100%);
+            color: #f7fafc;
+            box-shadow: 0 16px 32px rgba(79, 106, 131, 0.22);
+        }
+
+        .secondary-btn {
+            background: rgba(255, 255, 255, 0.82);
+            color: var(--blue-6);
+            border: 1px solid rgba(93, 120, 142, 0.16);
+        }
+
+        .ghost-btn,
+        .session-action-btn {
+            background: rgba(255, 255, 255, 0.6);
+            color: var(--text-soft);
+            border: 1px solid rgba(93, 120, 142, 0.14);
+        }
+
+        .send-btn {
+            width: 100%;
+            min-height: 52px;
+            font-size: 14px;
+        }
+
+        .compact-card {
+            padding: 14px;
+        }
+
+        .workspace-card.compact-card {
+            padding: 10px 12px;
+        }
+
+        .compact-head {
+            margin-bottom: 0;
+        }
+
+        .compact-info-box {
+            display: grid;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .compact-info-line {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            color: var(--text-soft);
+            font-size: 13px;
+        }
+
+        .compact-info-line strong {
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 700;
+            max-width: 170px;
+            text-align: right;
+            word-break: break-all;
+        }
+
+        .section-title-row {
+            margin-bottom: 12px;
+        }
+
+        .compact-workspace-info {
+            display: grid;
+            gap: 4px;
+        }
+
+        .current-role-desc {
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--text-soft);
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .compact-shortcuts {
+            gap: 6px;
+        }
+
+        .compact-empty-card {
+            display: grid;
+            gap: 12px;
+        }
+
+        .compact-empty-card p {
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .compact-composer-grid {
+            grid-template-columns: minmax(0, 1fr) 148px;
+        }
+
+        .compact-composer-side {
+            align-content: stretch;
+        }
+
+        .compact-toggle-label {
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .compact-workspace-top {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .featured-role-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
+        .featured-role-card {
+            border: 1px solid rgba(93, 120, 142, 0.12);
+            border-radius: 16px;
+            background: rgba(247, 250, 252, 0.94);
+            padding: 10px;
+            text-align: left;
+            display: grid;
+            gap: 4px;
+            min-height: 68px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .featured-role-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .featured-role-card.active {
+            border-color: rgba(93, 120, 142, 0.24);
+            background: rgba(228, 237, 243, 0.96);
+        }
+
+        .featured-role-name {
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        .featured-role-desc {
+            color: var(--text-soft);
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .lawyer-section-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .lawyer-scroll-block {
+            min-height: 0;
+            max-height: 100%;
+            overflow-y: auto;
+            padding-right: 4px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(93, 120, 142, 0.2) transparent;
+        }
+
+        .lawyer-scroll-block::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .lawyer-scroll-block::-webkit-scrollbar-thumb {
+            background: rgba(93, 120, 142, 0.2);
+            border-radius: 999px;
+        }
+
+        .featured-role-panel {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(93, 120, 142, 0.1);
+        }
+
+        .featured-role-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .compact-role-btn {
+            min-height: 36px;
+            padding: 0 14px;
+            font-size: 12px;
+            font-weight: 600;
+            flex: 0 0 auto;
+            white-space: nowrap;
+        }
+
+        .featured-role-panel .workspace-side-title {
+            color: var(--text-faint);
+            font-size: 11px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        .hidden-shortcuts {
+            display: none !important;
+        }
+
+        .toast-stack {
+            position: fixed;
+            top: 22px;
+            right: 22px;
+            z-index: 10;
+            display: grid;
+            gap: 10px;
+            width: min(360px, calc(100vw - 28px));
+        }
+
+        .toast {
+            border-radius: 18px;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.94);
+            border: 1px solid rgba(93, 120, 142, 0.16);
+            box-shadow: var(--shadow-md);
+            color: var(--text);
+            animation: fadeUp 0.25s ease;
+        }
+
+        .toast.success {
+            border-color: rgba(95, 139, 115, 0.28);
+        }
+
+        .toast.error {
+            border-color: rgba(185, 104, 104, 0.28);
+        }
+
+        .toast.info {
+            border-color: rgba(85, 113, 139, 0.22);
+        }
+
+        .is-loading {
+            opacity: 0.72;
+            pointer-events: none;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes floatCard {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        @keyframes blink {
+            0%, 80%, 100% {
+                opacity: 0.28;
+                transform: translateY(0);
+            }
+            40% {
+                opacity: 1;
+                transform: translateY(-2px);
+            }
+        }
+
+        @media (max-width: 1480px) {
+            .app-layout {
+                grid-template-columns: 214px minmax(0, 1fr);
+            }
+        }
+
+        @media (max-width: 1240px) {
+            .auth-layout {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .app-layout {
+                grid-template-columns: 300px minmax(0, 1fr);
+                height: auto;
+            }
+
+            .composer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .knowledge-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .chat-stage,
+            .knowledge-stage {
+                height: auto;
+                min-height: 0;
+            }
+
+            .page-shell {
+                width: min(1440px, calc(100% - 28px));
+                height: auto;
+                min-height: 100vh;
+                overflow: visible;
+            }
+
+            .floating-note {
+                position: relative;
+                right: auto;
+                bottom: auto;
+                width: 100%;
+                margin-top: 24px;
+                animation: none;
+            }
+        }
+
+        @media (min-width: 1600px) {
+            .page-shell {
+                width: min(1820px, calc(100vw - 72px));
+                padding-top: 24px;
+                padding-bottom: 32px;
+            }
+
+            .app-layout {
+                grid-template-columns: 250px minmax(0, 1fr);
+                gap: 22px;
+            }
+
+            .auth-layout {
+                grid-template-columns: minmax(560px, 0.95fr) minmax(520px, 0.85fr);
+            }
+
+            .thread-card,
+            .composer-card,
+            .workspace-card,
+            .rail-card {
+                padding: 24px;
+            }
+
+            .message {
+                max-width: min(1040px, 84%);
+            }
+        }
+
+        @media (max-width: 980px) {
+            .app-layout,
+            .composer-grid,
+            .field-grid,
+            .role-editor-grid,
+            .compact-composer-grid,
+            .knowledge-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .app-topbar,
+            .brand-row,
+            .app-brand-row,
+            .thread-head,
+            .profile-card-header,
+            .session-card-head,
+            .composer-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .app-layout {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .chat-stage,
+            .knowledge-stage,
+            .app-rail,
+            .stage-shell {
+                min-height: 0;
+            }
+
+            .app-shell,
+            body {
+                height: auto;
+                overflow-y: auto;
+            }
+
+            .message {
+                max-width: 100%;
+            }
+
+            .role-editor-footer,
+            .role-editor-footer-actions {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .page-shell {
+                width: calc(100% - 20px);
+                padding-top: 10px;
+                padding-bottom: 24px;
+                height: auto;
+            }
+
+            .hero-copy h1 {
+                font-size: 34px;
+            }
+
+            .auth-header h2,
+            .workspace-top h1,
+            .empty-state h3 {
+                font-size: 28px;
+            }
+
+            .hero-panel,
+            .auth-card,
+            .app-topbar,
+            .rail-card,
+            .workspace-card,
+            .thread-card,
+            .composer-card {
+                border-radius: 24px;
+            }
+
+            .hero-panel,
+            .auth-inner,
+            .rail-card,
+            .workspace-card,
+            .thread-card,
+            .composer-card {
+                padding: 20px;
+            }
+
+            .button-row,
+            .app-topbar-actions,
+            .session-head-actions,
+            .composer-tools {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .primary-btn,
+            .secondary-btn,
+            .ghost-btn,
+            .session-action-btn,
+            .send-btn,
+            .view-switch {
+                width: 100%;
+            }
+
+            .compact-role-btn {
+                width: auto;
+                align-self: flex-start;
+            }
+
+            .view-switch-btn {
+                flex: 1 1 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="toast-stack" id="toastStack"></div>
+
+    <main class="page-shell">
+        <section class="view auth-layout" id="authView">
+            <section class="hero-panel glass-panel">
+                <div class="brand-row">
+                    <div class="brand">
+                        <div class="brand-mark">L</div>
+                        <div class="brand-copy">
+                            <small>法律咨询系统</small>
+                            <strong>法律智能问答系统</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-copy compact-hero-copy">
+                    <h1>专业法律咨询工作台</h1>
+                    <p>登录后按角色独立管理咨询记录，持续追问时上下文自动保留。</p>
+                </div>
+            </section>
+
+            <section class="auth-card glass-panel">
+                <div class="auth-inner">
+                    <div class="auth-header">
+                        <div class="form-meta">账户入口</div>
+                        <h2>进入法律咨询工作台</h2>
+                        <p>请使用已注册账号登录，或完成账号注册后进入系统。平台将按所选角色视角保存咨询记录与会话上下文，便于持续开展法律问题分析与沟通。</p>
+                        <div class="auth-tabs">
+                            <button type="button" class="auth-tab active" data-auth-tab="login">登录</button>
+                            <button type="button" class="auth-tab" data-auth-tab="register">注册</button>
+                        </div>
+                    </div>
+
+                    <section id="loginPanel">
+                        <form class="auth-form" id="loginForm">
+                            <div class="field">
+                                <label for="loginUsername">用户名</label>
+                                <input id="loginUsername" name="username" type="text" placeholder="请输入用户名" autocomplete="username">
+                            </div>
+                            <div class="field">
+                                <label for="loginPassword">密码</label>
+                                <input id="loginPassword" name="password" type="password" placeholder="请输入密码" autocomplete="current-password">
+                            </div>
+                            <div class="button-row">
+                                <button type="submit" class="primary-btn" id="loginButton">立即登录</button>
+                                <button type="button" class="secondary-btn" data-switch-auth="register">创建新账号</button>
+                            </div>
+                            <div class="helper-copy">登录后可直接进入个人咨询工作区，系统将自动加载与你账号关联的角色会话记录。</div>
+                        </form>
+                    </section>
+
+                    <section id="registerPanel" hidden>
+                        <form class="auth-form" id="registerForm">
+                            <div class="field-grid">
+                                <div class="field">
+                                    <label for="registerUsername">用户名</label>
+                                    <input id="registerUsername" name="username" type="text" placeholder="创建用户名" autocomplete="username">
+                                </div>
+                                <div class="field">
+                                    <label for="registerEmail">邮箱</label>
+                                    <input id="registerEmail" name="email" type="email" placeholder="请输入常用邮箱" autocomplete="email">
+                                </div>
+                            </div>
+                            <div class="field-grid">
+                                <div class="field">
+                                    <label for="registerPassword">密码</label>
+                                    <input id="registerPassword" name="password" type="password" placeholder="设置密码" autocomplete="new-password">
+                                </div>
+                                <div class="field">
+                                    <label for="registerConfirmPassword">确认密码</label>
+                                    <input id="registerConfirmPassword" name="confirmPassword" type="password" placeholder="再次输入密码" autocomplete="new-password">
+                                </div>
+                            </div>
+                            <div class="button-row">
+                                <button type="submit" class="primary-btn" id="registerButton">注册并进入系统</button>
+                                <button type="button" class="secondary-btn" data-switch-auth="login">已有账号</button>
+                            </div>
+                            <div class="helper-copy">完成注册后将自动创建专属咨询工作区，并进入系统开始使用，无需重复登录。</div>
+                        </form>
+                    </section>
+
+                </div>
+            </section>
+        </section>
+
+        <section class="view app-shell" id="appView" hidden>
+            <header class="app-topbar glass-panel">
+                <div class="app-brand-row">
+                    <div class="brand">
+                        <div class="brand-mark">L</div>
+                        <div class="app-brand-copy">
+                            <small>法律咨询工作台</small>
+                            <strong>法律智能问答系统</strong>
+                        </div>
+                    </div>
+                </div>
+                <div class="app-topbar-actions">
+                    <div class="view-switch" id="viewSwitch">
+                        <button type="button" class="view-switch-btn active" data-app-view="chat">智能咨询</button>
+                        <button type="button" class="view-switch-btn" data-app-view="knowledge">知识入库</button>
+                    </div>
+                    <div class="date-pill" id="todayLabel"></div>
+                    <div class="status-pill" id="sessionStatus">已准备开始咨询</div>
+                    <button type="button" class="ghost-btn" id="logoutButton">退出登录</button>
+                </div>
+            </header>
+
+            <div class="app-layout">
+                <aside class="app-rail rail-left">
+                    <section class="rail-card account-card compact-card">
+                        <div class="profile-card-header compact-head">
+                            <div>
+                                <div class="sidebar-title">当前用户</div>
+                                <h3 id="currentUserName">访客</h3>
+                            </div>
+                            <button type="button" class="session-action-btn" id="newSessionButton">新建会话</button>
+                        </div>
+                        <div class="mini-box compact-info-box">
+                            <div class="compact-info-line">
+                                <span>当前会话</span>
+                                <strong id="activeSessionLabel">尚未创建</strong>
+                            </div>
+                            <div class="compact-info-line">
+                                <span>会话数量</span>
+                                <strong id="sessionCount">0</strong>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="rail-card compact-card roles-card">
+                        <div class="lawyer-scroll-block">
+                            <div class="featured-role-panel">
+                                <div class="featured-role-head">
+                                    <span class="workspace-side-title">常用角色</span>
+                                    <button type="button" class="session-action-btn compact-role-btn" id="openRoleEditorButton">新建角色</button>
+                                </div>
+                                <div class="featured-role-row" id="featuredRoleRow"></div>
+                            </div>
+                            <div class="custom-role-panel">
+                                <div class="custom-role-head">
+                                    <span>自定义角色</span>
+                                    <strong class="role-count-badge" id="customRoleCount">0</strong>
+                                </div>
+                                <div class="role-grid" id="roleGrid"></div>
+                                <p class="custom-role-empty" id="customRoleEmpty">还没有自定义角色。你可以创建法官、律师、原告、被告等专属视角。</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="rail-card sessions-card compact-card">
+                        <div class="session-card-head compact-head">
+                            <div class="sidebar-title">会话记录</div>
+                            <div class="session-head-actions">
+                                <button type="button" class="session-action-btn" id="refreshSessionsButton">刷新</button>
+                                <button type="button" class="ghost-btn" id="clearSessionButton">清空</button>
+                            </div>
+                        </div>
+                        <div class="session-stack" id="sessionList"></div>
+                    </section>
+                </aside>
+
+                <section class="stage-shell">
+                    <section class="chat-stage" id="chatStage">
+                        <section class="workspace-card compact-card">
+                            <div class="workspace-top compact-workspace-top">
+                                <div class="workspace-main-info compact-workspace-info">
+                                    <div class="workspace-kicker">当前角色</div>
+                                    <h1 id="workspaceTitle">综合法律咨询</h1>
+                                    <p class="workspace-description current-role-desc" id="workspaceDescription">适合大多数法律问题的初步判断 风险提示与下一步建议</p>
+                                </div>
+                                <div class="workspace-meta" id="workspaceMeta"></div>
+                            </div>
+                            <div class="shortcut-row compact-shortcuts hidden-shortcuts" id="shortcutRow"></div>
+                        </section>
+
+                        <section class="thread-card">
+                            <div class="thread-head compact-head">
+                                <h2>对话记录</h2>
+                            </div>
+                            <div class="thread-scroll" id="chatThread">
+                                <div class="empty-state" id="emptyState">
+                                    <div class="empty-state-card compact-empty-card">
+                                        <small>开始咨询</small>
+                                        <p>请直接输入你的法律问题，或点击下方快捷提问开始。</p>
+                                        <div class="empty-chip-row" id="emptyPromptChips"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="composer-card compact-card">
+                            <div class="composer-grid compact-composer-grid">
+                                <div class="composer-main">
+                                    <textarea id="messageInput" placeholder="请输入你的法律问题" maxlength="1000"></textarea>
+                                </div>
+                                <div class="composer-side compact-composer-side">
+                                    <div class="toggle-box">
+                                        <div class="toggle-row">
+                                            <span class="compact-toggle-label">流式回答</span>
+                                            <label class="toggle">
+                                                <input type="checkbox" id="streamCheck" checked>
+                                                <span class="toggle-track"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="primary-btn send-btn" id="sendButton">发送</button>
+                                </div>
+                            </div>
+                        </section>
+                    </section>
+
+                    <section class="knowledge-stage" id="knowledgeStage" hidden>
+                        <section class="workspace-card compact-card">
+                            <div class="workspace-top">
+                                <div class="workspace-main-info">
+                                    <div class="workspace-kicker">知识入库</div>
+                                    <h1>文档上传与 Milvus 入库</h1>
+                                    <p class="workspace-description" id="knowledgeRoleHint">当前将按所选角色的专业领域设置默认入库分类，并同步保存到 Milvus 知识库。</p>
+                                </div>
+                                <div class="workspace-meta">
+                                    <span class="meta-chip">支持 TXT</span>
+                                    <span class="meta-chip">支持 PDF</span>
+                                    <span class="meta-chip">支持 DOCX</span>
+                                    <span class="meta-chip">支持 JSON CSV</span>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="knowledge-layout">
+                            <section class="rail-card knowledge-form-card">
+                                <div class="knowledge-panel-head">
+                                    <div>
+                                        <div class="sidebar-title">当前入库角色</div>
+                                        <h3 id="knowledgeRoleLabel">综合角色资料库</h3>
+                                        <p class="knowledge-panel-copy">上传后的文件会先保存到服务器，再自动切分并写入 Milvus 向量库。</p>
+                                    </div>
+                                    <button type="button" class="session-action-btn" id="refreshKnowledgeButton">刷新列表</button>
+                                </div>
+
+                                <div class="knowledge-form">
+                                    <div class="field">
+                                        <label for="knowledgeFile">选择文件</label>
+                                        <input id="knowledgeFile" type="file" accept=".txt,.md,.pdf,.docx,.json,.csv">
+                                    </div>
+
+                                    <div class="field">
+                                        <label for="knowledgeTitle">文档标题</label>
+                                        <input id="knowledgeTitle" type="text" placeholder="默认使用文件名">
+                                    </div>
+
+                                    <div class="field-grid">
+                                        <div class="field">
+                                            <label for="knowledgeDocType">文档类型</label>
+                                            <select id="knowledgeDocType">
+                                                <option value="law">法律条文</option>
+                                                <option value="case">案例材料</option>
+                                                <option value="guide">办事指引</option>
+                                                <option value="interpretation">司法解释</option>
+                                                <option value="general" selected>其他资料</option>
+                                            </select>
+                                        </div>
+                                        <div class="field">
+                                            <label for="knowledgeLegalField">法律领域</label>
+                                            <select id="knowledgeLegalField">
+                                                <option value="general">综合</option>
+                                                <option value="civil">民事</option>
+                                                <option value="criminal">刑事</option>
+                                                <option value="labor">劳动</option>
+                                                <option value="contract">合同</option>
+                                                <option value="family">婚姻家事</option>
+                                                <option value="company">公司</option>
+                                                <option value="administrative">行政</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="field">
+                                        <label for="knowledgeSource">来源说明</label>
+                                        <input id="knowledgeSource" type="text" placeholder="例如 内部材料 客户提供 公开文件">
+                                    </div>
+
+                                    <div class="knowledge-actions">
+                                        <button type="button" class="primary-btn" id="uploadKnowledgeButton">上传并入库</button>
+                                        <p class="knowledge-note">文件上传成功后，系统会自动抽取文本、切分片段并写入 Milvus，当前列表默认按所选角色领域展示。</p>
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section class="rail-card knowledge-list-card">
+                                <div class="knowledge-list-head">
+                                    <div>
+                                        <div class="sidebar-title">已入库文档</div>
+                                        <h3>当前领域文档</h3>
+                                        <p class="knowledge-panel-copy" id="knowledgeListHint">当前列表会按所选角色的专业领域筛选显示。</p>
+                                    </div>
+                                    <div class="knowledge-stat">
+                                        <strong id="knowledgeDocCount">0</strong>
+                                        <span>份文档</span>
+                                    </div>
+                                </div>
+                                <div class="knowledge-doc-list" id="knowledgeDocList"></div>
+                            </section>
+                        </section>
+                    </section>
+                </section>
+            </div>
+
+            <div class="role-editor-overlay" id="roleEditorOverlay" hidden>
+                <div class="role-editor-dialog">
+                    <div class="role-editor-head">
+                        <div>
+                            <div class="sidebar-title">自定义角色</div>
+                            <h3 id="roleEditorTitle">新建角色</h3>
+                            <p class="role-editor-copy">保存后，这个角色会出现在左侧列表里，并能直接用于当前对话切换。</p>
+                        </div>
+                        <button type="button" class="ghost-btn" id="closeRoleEditorButton">关闭</button>
+                    </div>
+
+                    <form class="role-editor-form" id="roleEditorForm">
+                        <div class="role-editor-grid">
+                            <div class="field">
+                                <label for="customRoleName">角色名称</label>
+                                <input id="customRoleName" type="text" placeholder="例如 法官 律师 原告 被告" maxlength="100">
+                            </div>
+                            <div class="field">
+                                <label for="customRoleStyle">语气风格</label>
+                                <select id="customRoleStyle">
+                                    <option value="professional">专业权威</option>
+                                    <option value="formal">正式严谨</option>
+                                    <option value="friendly">友好亲和</option>
+                                    <option value="concise">简洁直接</option>
+                                    <option value="detailed">详细全面</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label for="customRoleDescription">角色定位</label>
+                            <textarea id="customRoleDescription" rows="4" placeholder="描述这个角色会站在什么立场、重点关注什么问题、适合处理什么场景。"></textarea>
+                        </div>
+
+                        <div class="field">
+                            <label for="customRoleSpecialties">专业领域</label>
+                            <input id="customRoleSpecialties" type="text" placeholder="多个领域请用中文逗号或英文逗号分隔，例如 婚姻家事，证据分析，庭审表达">
+                        </div>
+
+                        <div class="field">
+                            <label for="customRoleSystemPrompt">系统提示词</label>
+                            <textarea id="customRoleSystemPrompt" rows="10" placeholder="输入你希望长期保存并在对话中生效的系统提示词。留空时，系统会根据角色定位、专业领域和语气风格自动生成。"></textarea>
+                            <p class="role-editor-note">这里保存的是角色级系统提示词，后续每次切换到这个角色都会自动带上。</p>
+                        </div>
+
+                        <div class="role-editor-footer">
+                            <button type="button" class="mini-danger-btn" id="deleteRoleButton" hidden>删除角色</button>
+                            <div class="role-editor-footer-actions">
+                                <button type="button" class="secondary-btn" id="cancelRoleEditorButton">取消</button>
+                                <button type="submit" class="primary-btn" id="saveRoleButton">保存角色</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const API_BASE = "/api/v1";
+        const CHAT_REQUEST_TIMEOUT_MS = 0;
+        const CHAT_SOFT_TARGET_MS = 30000;
+        const SESSION_ROLE_SEPARATOR = "__";
+        const SESSION_CACHE_PREFIX = "legal_chat_sessions_";
+        const SESSION_MESSAGE_CACHE_PREFIX = "legal_chat_messages_";
+
+        const systemRoles = [
+            {
+                id: "lawyer",
+                name: "\u7efc\u5408\u5f8b\u5e08",
+                short: "\u7efc",
+                knowledgeField: "general",
+                description: "\u9002\u5408\u5927\u591a\u6570\u6cd5\u5f8b\u95ee\u9898\u7684\u521d\u6b65\u5224\u65ad \u98ce\u9669\u63d0\u793a\u4e0e\u5904\u7406\u8def\u5f84\u68b3\u7406",
+                specialties: ["\u7efc\u5408\u54a8\u8be2", "\u98ce\u9669\u5224\u65ad", "\u5904\u7406\u5efa\u8bae"],
+                prompts: ["\u6211\u5e94\u8be5\u5148\u6536\u96c6\u54ea\u4e9b\u8bc1\u636e", "\u8fd9\u4e2a\u95ee\u9898\u53ef\u80fd\u6d89\u53ca\u54ea\u4e9b\u6cd5\u5f8b\u8d23\u4efb", "\u5982\u679c\u51c6\u5907\u8d77\u8bc9 \u6211\u7b2c\u4e00\u6b65\u5e94\u5f53\u505a\u4ec0\u4e48"]
+            },
+            {
+                id: "criminal_lawyer",
+                name: "\u5211\u4e8b\u8fa9\u62a4\u5f8b\u5e08",
+                short: "\u5211",
+                knowledgeField: "criminal",
+                description: "\u805a\u7126\u5211\u4e8b\u98ce\u9669 \u4fa6\u67e5\u9636\u6bb5\u5e94\u5bf9 \u53d6\u4fdd\u5019\u5ba1\u4e0e\u8fa9\u62a4\u601d\u8def",
+                specialties: ["\u5211\u4e8b\u98ce\u9669", "\u4fa6\u67e5\u9636\u6bb5", "\u8fa9\u62a4\u7b56\u7565"],
+                prompts: ["\u88ab\u4f20\u5524\u540e\u6211\u5e94\u5f53\u6ce8\u610f\u4ec0\u4e48", "\u5bb6\u5c5e\u73b0\u5728\u53ef\u4ee5\u505a\u54ea\u4e9b\u51c6\u5907", "\u53d6\u4fdd\u5019\u5ba1\u901a\u5e38\u9700\u8981\u6ee1\u8db3\u4ec0\u4e48\u6761\u4ef6"]
+            },
+            {
+                id: "labor_lawyer",
+                name: "\u52b3\u52a8\u6cd5\u5f8b\u5e08",
+                short: "\u52b3",
+                knowledgeField: "labor",
+                description: "\u5904\u7406\u62d6\u6b20\u5de5\u8d44 \u672a\u7b7e\u5408\u540c \u5de5\u4f24 \u8fdd\u6cd5\u89e3\u9664\u4e0e\u52b3\u52a8\u4e89\u8bae",
+                specialties: ["\u5de5\u8d44\u62d6\u6b20", "\u52b3\u52a8\u4ef2\u88c1", "\u5de5\u4f24\u7ef4\u6743"],
+                prompts: ["\u516c\u53f8\u6ca1\u6709\u7b7e\u52b3\u52a8\u5408\u540c\u600e\u4e48\u529e", "\u52b3\u52a8\u4ef2\u88c1\u4e00\u822c\u9700\u8981\u54ea\u4e9b\u6750\u6599", "\u79bb\u804c\u540e\u88ab\u62d6\u6b20\u5de5\u8d44\u8be5\u5982\u4f55\u4e3b\u5f20"]
+            },
+            {
+                id: "family_lawyer",
+                name: "\u5a5a\u59fb\u5bb6\u4e8b\u5f8b\u5e08",
+                short: "\u5bb6",
+                knowledgeField: "family",
+                description: "\u805a\u7126\u79bb\u5a5a \u629a\u517b \u5171\u540c\u8d22\u4ea7\u5206\u5272\u4e0e\u5bb6\u5ead\u5185\u90e8\u7ea0\u7eb7\u5904\u7406",
+                specialties: ["\u79bb\u5a5a\u7ea0\u7eb7", "\u5b50\u5973\u629a\u517b", "\u8d22\u4ea7\u5206\u5272"],
+                prompts: ["\u79bb\u5a5a\u65f6\u8d22\u4ea7\u4e00\u822c\u5982\u4f55\u5206\u5272", "\u5b50\u5973\u629a\u517b\u6743\u4f1a\u91cd\u70b9\u770b\u54ea\u4e9b\u56e0\u7d20", "\u4e00\u65b9\u8f6c\u79fb\u8d22\u4ea7\u8be5\u5982\u4f55\u5904\u7406"]
+            },
+            {
+                id: "contract_lawyer",
+                name: "\u5408\u540c\u5f8b\u5e08",
+                short: "\u5408",
+                knowledgeField: "contract",
+                description: "\u9002\u5408\u5408\u540c\u5ba1\u67e5 \u8fdd\u7ea6\u5904\u7406 \u8865\u5145\u534f\u8bae\u4e0e\u5c65\u7ea6\u4e89\u8bae\u5206\u6790",
+                specialties: ["\u5408\u540c\u5ba1\u67e5", "\u8fdd\u7ea6\u8d23\u4efb", "\u5c65\u7ea6\u4e89\u8bae"],
+                prompts: ["\u5bf9\u65b9\u8fdd\u7ea6\u540e\u6211\u8be5\u5982\u4f55\u4e3b\u5f20\u635f\u5931", "\u5408\u540c\u91cc\u54ea\u4e9b\u6761\u6b3e\u6700\u9700\u8981\u91cd\u70b9\u5ba1\u67e5", "\u8fdd\u7ea6\u91d1\u7ea6\u5b9a\u8fc7\u9ad8\u53ef\u4ee5\u8c03\u6574\u5417"]
+            }
+        ].map((role) => ({
+            ...role,
+            backendRoleId: String(role.id),
+            source: "system",
+            isCustom: false,
+            answerStyle: "professional",
+            systemPrompt: "",
+            promptTemplate: ""
+        }));
+
+        const ROLE_FIELD_KEYWORDS = {
+            criminal: ["刑事", "犯罪", "侦查", "辩护", "取保", "公安", "检察", "审判"],
+            labor: ["劳动", "工伤", "仲裁", "工资", "社保", "离职", "竞业"],
+            family: ["婚姻", "离婚", "抚养", "继承", "家事", "家暴", "夫妻"],
+            contract: ["合同", "违约", "履约", "条款", "签约", "交易"],
+            company: ["公司", "股权", "治理", "合规", "董事", "经营"],
+            administrative: ["行政", "处罚", "复议", "许可", "城管", "政府"],
+            civil: ["民事", "侵权", "赔偿", "债务", "财产", "纠纷"]
+        };
+
+        function makeRoleShortLabel(name) {
+            const text = String(name || "").trim();
+            return text ? text.slice(0, 1) : "\u89d2";
+        }
+
+        function inferKnowledgeField(role) {
+            const searchText = [
+                role.display_name,
+                role.description,
+                ...(Array.isArray(role.specialties) ? role.specialties : []),
+                ...(Array.isArray(role.tags) ? role.tags : [])
+            ].join(" ");
+
+            for (const [field, keywords] of Object.entries(ROLE_FIELD_KEYWORDS)) {
+                if (keywords.some((keyword) => searchText.includes(keyword))) {
+                    return field;
+                }
+            }
+
+            return "general";
+        }
+
+        function buildCustomRolePrompts(roleName, specialties = []) {
+            const displayName = String(roleName || "\u8fd9\u4e2a\u89d2\u8272").trim();
+            const primarySpecialty = specialties[0] || "\u5f53\u524d\u4e89\u8bae";
+            return [
+                `\u8bf7\u4ee5${displayName}\u7684\u89c6\u89d2\u68b3\u7406\u6838\u5fc3\u4e89\u8bae\u4e0e\u6709\u5229\u4e8b\u5b9e`,
+                `\u5982\u679c\u4f60\u662f${displayName}\uff0c\u4e0b\u4e00\u6b65\u6700\u8be5\u51c6\u5907\u54ea\u4e9b\u8bc1\u636e`,
+                `\u56f4\u7ed5${primarySpecialty}\uff0c\u8bf7\u7ed9\u6211\u4e00\u4e2a\u66f4\u7a33\u5985\u7684\u5904\u7406\u65b9\u6848`
+            ];
+        }
+
+        function normalizeCustomRole(role) {
+            const specialties = Array.isArray(role.specialties)
+                ? role.specialties.map((item) => String(item || "").trim()).filter(Boolean)
+                : [];
+            const displayName = role.display_name || role.name || "\u81ea\u5b9a\u4e49\u89d2\u8272";
+
+            return {
+                id: `custom:${role.id}`,
+                backendRoleId: String(role.id),
+                name: displayName,
+                short: makeRoleShortLabel(displayName),
+                knowledgeField: inferKnowledgeField(role),
+                description: role.description || "\u81ea\u5b9a\u4e49\u89d2\u8272",
+                specialties,
+                prompts: buildCustomRolePrompts(displayName, specialties),
+                source: "custom",
+                isCustom: true,
+                answerStyle: role.answer_style || "professional",
+                systemPrompt: role.system_prompt || "",
+                promptTemplate: role.prompt_template || "",
+                ownerId: role.owner_id,
+                createdAt: role.created_at,
+                raw: role
+            };
+        }
+
+        function refreshRoleCatalog(customRoles = [], preferredRoleId = null) {
+            const fallbackRoleId = preferredRoleId || (state.selectedRole && state.selectedRole.id) || systemRoles[0].id;
+            state.customRoles = customRoles.slice();
+            state.roles = [...systemRoles, ...state.customRoles];
+            state.selectedRole = state.roles.find((role) => role.id === fallbackRoleId) || systemRoles[0];
+        }
+
+        function findRoleById(roleId) {
+            return state.roles.find((role) => role.id === roleId) || null;
+        }
+
+        const state = {
+            currentUser: null,
+            roles: [...systemRoles],
+            customRoles: [],
+            selectedRole: systemRoles[0],
+            currentView: "chat",
+            currentSessionIds: {},
+            allSessions: [],
+            sessions: [],
+            knowledgeDocuments: [],
+            isSending: false,
+            roleEditorMode: "create",
+            editingRoleId: null
+        };
+
+        const elements = {
+            authView: document.getElementById("authView"),
+            appView: document.getElementById("appView"),
+            chatStage: document.getElementById("chatStage"),
+            knowledgeStage: document.getElementById("knowledgeStage"),
+            viewSwitchButtons: document.querySelectorAll("[data-app-view]"),
+            loginPanel: document.getElementById("loginPanel"),
+            registerPanel: document.getElementById("registerPanel"),
+            loginForm: document.getElementById("loginForm"),
+            registerForm: document.getElementById("registerForm"),
+            loginUsername: document.getElementById("loginUsername"),
+            loginPassword: document.getElementById("loginPassword"),
+            registerUsername: document.getElementById("registerUsername"),
+            registerEmail: document.getElementById("registerEmail"),
+            registerPassword: document.getElementById("registerPassword"),
+            registerConfirmPassword: document.getElementById("registerConfirmPassword"),
+            loginButton: document.getElementById("loginButton"),
+            registerButton: document.getElementById("registerButton"),
+            openRoleEditorButton: document.getElementById("openRoleEditorButton"),
+            roleGrid: document.getElementById("roleGrid"),
+            customRoleCount: document.getElementById("customRoleCount"),
+            customRoleEmpty: document.getElementById("customRoleEmpty"),
+            currentUserName: document.getElementById("currentUserName"),
+            workspaceTitle: document.getElementById("workspaceTitle"),
+            workspaceDescription: document.getElementById("workspaceDescription"),
+            workspaceMeta: document.getElementById("workspaceMeta"),
+            featuredRoleRow: document.getElementById("featuredRoleRow"),
+            shortcutRow: document.getElementById("shortcutRow"),
+            emptyPromptChips: document.getElementById("emptyPromptChips"),
+            chatThread: document.getElementById("chatThread"),
+            emptyState: document.getElementById("emptyState"),
+            messageInput: document.getElementById("messageInput"),
+            sendButton: document.getElementById("sendButton"),
+            streamCheck: document.getElementById("streamCheck"),
+            toastStack: document.getElementById("toastStack"),
+            todayLabel: document.getElementById("todayLabel"),
+            sessionStatus: document.getElementById("sessionStatus"),
+            activeSessionLabel: document.getElementById("activeSessionLabel"),
+            logoutButton: document.getElementById("logoutButton"),
+            sessionList: document.getElementById("sessionList"),
+            sessionCount: document.getElementById("sessionCount"),
+            newSessionButton: document.getElementById("newSessionButton"),
+            refreshSessionsButton: document.getElementById("refreshSessionsButton"),
+            clearSessionButton: document.getElementById("clearSessionButton"),
+            knowledgeRoleLabel: document.getElementById("knowledgeRoleLabel"),
+            knowledgeRoleHint: document.getElementById("knowledgeRoleHint"),
+            knowledgeListHint: document.getElementById("knowledgeListHint"),
+            knowledgeFile: document.getElementById("knowledgeFile"),
+            knowledgeTitle: document.getElementById("knowledgeTitle"),
+            knowledgeDocType: document.getElementById("knowledgeDocType"),
+            knowledgeLegalField: document.getElementById("knowledgeLegalField"),
+            knowledgeSource: document.getElementById("knowledgeSource"),
+            uploadKnowledgeButton: document.getElementById("uploadKnowledgeButton"),
+            refreshKnowledgeButton: document.getElementById("refreshKnowledgeButton"),
+            knowledgeDocList: document.getElementById("knowledgeDocList"),
+            knowledgeDocCount: document.getElementById("knowledgeDocCount"),
+            roleEditorOverlay: document.getElementById("roleEditorOverlay"),
+            roleEditorTitle: document.getElementById("roleEditorTitle"),
+            roleEditorForm: document.getElementById("roleEditorForm"),
+            closeRoleEditorButton: document.getElementById("closeRoleEditorButton"),
+            cancelRoleEditorButton: document.getElementById("cancelRoleEditorButton"),
+            saveRoleButton: document.getElementById("saveRoleButton"),
+            deleteRoleButton: document.getElementById("deleteRoleButton"),
+            customRoleName: document.getElementById("customRoleName"),
+            customRoleStyle: document.getElementById("customRoleStyle"),
+            customRoleDescription: document.getElementById("customRoleDescription"),
+            customRoleSpecialties: document.getElementById("customRoleSpecialties"),
+            customRoleSystemPrompt: document.getElementById("customRoleSystemPrompt")
+        };
+
+        function init() {
+            applyChineseText();
+            bindEvents();
+            renderRoleGrid();
+            renderWorkspace();
+            renderEmptyPrompts();
+            updateTodayLabel();
+
+            const storedUser = localStorage.getItem("legal_chat_current_user");
+            const storedUserId = localStorage.getItem("legal_chat_current_user_id");
+
+            if (storedUser && storedUserId) {
+                state.currentUser = { id: storedUserId, name: storedUser };
+                showAppView();
+            } else {
+                showAuthView();
+            }
+        }
+
+        function applyChineseText() {
+            document.title = "\u6cd5\u5f8b\u667a\u80fd\u95ee\u7b54\u7cfb\u7edf";
+
+            const textMap = [
+                [".brand-copy small", "\u83ab\u5170\u8fea\u84dd\u89c6\u89c9\u754c\u9762"],
+                [".brand-copy strong", "\u6cd5\u5f8b\u667a\u80fd\u95ee\u7b54\u7cfb\u7edf"],
+                [".app-brand-copy small", "\u6cd5\u5f8b\u54a8\u8be2\u5de5\u4f5c\u53f0"],
+                [".app-brand-copy strong", "\u6cd5\u5f8b\u667a\u80fd\u95ee\u7b54\u7cfb\u7edf"],
+                [".ambient-pill", "\u514b\u5236 \u6e05\u6670 \u4e13\u4e1a\u7684\u6cd5\u5f8b\u54a8\u8be2\u4f53\u9a8c"],
+                [".auth-header .form-meta", "\u8d26\u6237\u5165\u53e3"],
+                [".topbar-brief", "\u4ee5\u6e05\u6670\u7ed3\u6784\u627f\u8f7d\u5f8b\u5e08\u89c6\u89d2 \u4f1a\u8bdd\u8bb0\u5f55\u4e0e\u6301\u7eed\u8ffd\u95ee"],
+                ["#logoutButton", "\u9000\u51fa\u767b\u5f55"],
+                [".rail-left .profile-card-header p", "\u4f60\u7684\u4e13\u5c5e\u6cd5\u5f8b\u54a8\u8be2\u5de5\u4f5c\u53f0\u5df2\u5c31\u7eea \u53ef\u4ee5\u6309\u5f8b\u5e08\u89d2\u8272\u5206\u522b\u7ba1\u7406\u5bf9\u8bdd"],
+                [".rail-left .session-card-head p", "\u8fd9\u91cc\u53ea\u663e\u793a\u5f53\u524d\u5f8b\u5e08\u540d\u4e0b\u7684\u72ec\u7acb\u5bf9\u8bdd \u4e92\u4e0d\u5f71\u54cd \u65b9\u4fbf\u6301\u7eed\u8ffd\u95ee"],
+                [".workspace-side-note strong", "\u5de5\u4f5c\u63d0\u793a"],
+                [".workspace-side-note p", "\u63cf\u8ff0\u6848\u4ef6\u4e8b\u5b9e\u65f6\u5efa\u8bae\u8865\u5145\u65f6\u95f4 \u4e3b\u4f53\u5173\u7cfb \u5173\u952e\u8bc1\u636e\u548c\u5f53\u524d\u9636\u6bb5 \u7cfb\u7edf\u4f1a\u7ed9\u51fa\u66f4\u4e13\u4e1a\u4e14\u66f4\u5177\u53ef\u6267\u884c\u6027\u7684\u5206\u6790"],
+                [".thread-head h2", "\u5bf9\u8bdd\u8bb0\u5f55"],
+                [".thread-head .note", "\u6a21\u578b\u56de\u7b54\u4f1a\u7ed3\u5408\u5f53\u524d\u5f8b\u5e08\u89d2\u8272\u4e0e\u5386\u53f2\u4e0a\u4e0b\u6587\u8f93\u51fa \u9002\u5408\u8fde\u7eed\u54a8\u8be2"],
+                ["#emptyState small", "\u51c6\u5907\u5c31\u7eea"],
+                ["#emptyState h3", "\u4ece\u4e00\u4e2a\u5177\u4f53\u6cd5\u5f8b\u95ee\u9898\u5f00\u59cb \u5c31\u80fd\u83b7\u5f97\u66f4\u6709\u7ed3\u6784\u7684\u4e13\u4e1a\u7b54\u590d"],
+                ["#emptyState p", "\u4f60\u53ef\u4ee5\u5148\u63cf\u8ff0\u5408\u540c\u7ea0\u7eb7 \u52b3\u52a8\u4e89\u8bae \u5a5a\u59fb\u5bb6\u4e8b \u5211\u4e8b\u98ce\u9669\u6216\u8d54\u507f\u8ba1\u7b97\u7b49\u95ee\u9898 \u7cfb\u7edf\u4f1a\u6839\u636e\u5f53\u524d\u5f8b\u5e08\u89c6\u89d2\u6574\u7406\u56de\u590d\u91cd\u70b9"],
+                [".composer-top .composer-note", "\u652f\u6301\u591a\u884c\u8f93\u5165 \u6309 Enter \u53d1\u9001 \u6309 Shift + Enter \u6362\u884c"],
+                [".composer-tools .meta-chip:first-child", "\u591a\u8f6e\u5bf9\u8bdd"],
+                [".composer-tools .meta-chip:last-child", "\u4e13\u4e1a\u672f\u8bed\u8868\u8fbe"],
+                [".toggle-row strong", "\u6d41\u5f0f\u56de\u7b54"],
+                [".toggle-row .composer-note", "\u66f4\u63a5\u8fd1\u5b9e\u65f6\u54a8\u8be2\u4f53\u9a8c"],
+                ["#sendButton", "\u53d1\u9001\u95ee\u9898"],
+                [".rail-right .role-board-head p", "\u9009\u62e9\u4e0e\u4f60\u5f53\u524d\u95ee\u9898\u66f4\u5339\u914d\u7684\u5f8b\u5e08\u89c6\u89d2 \u6bcf\u4e2a\u5f8b\u5e08\u90fd\u4fdd\u7559\u5404\u81ea\u72ec\u7acb\u7684\u4f1a\u8bdd\u8bb0\u5f55"],
+                [".prompt-card .role-board-head p", "\u53ef\u76f4\u63a5\u70b9\u51fb\u8fd9\u4e9b\u95ee\u9898\u4f5c\u4e3a\u8d77\u70b9 \u5feb\u901f\u8fdb\u5165\u5f53\u524d\u5f8b\u5e08\u7684\u54a8\u8be2\u573a\u666f"]
+            ];
+
+            textMap.forEach(([selector, value]) => {
+                const node = document.querySelector(selector);
+                if (node) node.textContent = value;
+            });
+
+            const sidebarTitles = document.querySelectorAll(".sidebar-title");
+            if (sidebarTitles[0]) sidebarTitles[0].textContent = "\u5f53\u524d\u7528\u6237";
+            if (sidebarTitles[1]) sidebarTitles[1].textContent = "\u89d2\u8272\u4e2d\u5fc3";
+            if (sidebarTitles[2]) sidebarTitles[2].textContent = "\u4f1a\u8bdd\u8bb0\u5f55";
+
+            const statMuted = document.querySelectorAll(".stat-box .muted");
+            if (statMuted[0]) statMuted[0].textContent = "\u5f53\u524d\u5f8b\u5e08\u4f1a\u8bdd";
+            if (statMuted[1]) statMuted[1].textContent = "\u5f8b\u5e08\u89d2\u8272";
+
+            const composerNotes = document.querySelectorAll(".composer-note");
+            if (composerNotes[0]) composerNotes[0].textContent = "\u5f53\u524d\u4f1a\u8bdd\u7f16\u53f7";
+
+            const authMetricTitles = document.querySelectorAll(".metric-card strong");
+            if (authMetricTitles[2]) authMetricTitles[2].textContent = "\u6d41\u5f0f";
+
+            if (elements && elements.messageInput) {
+                elements.messageInput.placeholder = "\u8bf7\u8f93\u5165\u4f60\u7684\u6cd5\u5f8b\u95ee\u9898 \u4f8b\u5982 \u516c\u53f8\u672a\u7b7e\u52b3\u52a8\u5408\u540c\u5e76\u62d6\u6b20\u5de5\u8d44 \u6211\u5e94\u5f53\u5982\u4f55\u4e3b\u5f20\u6743\u5229";
+            }
+        }
+
+        function bindEvents() {
+            document.querySelectorAll("[data-auth-tab]").forEach((button) => {
+                button.addEventListener("click", () => switchAuth(button.dataset.authTab));
+            });
+
+            document.querySelectorAll("[data-switch-auth]").forEach((button) => {
+                button.addEventListener("click", () => switchAuth(button.dataset.switchAuth));
+            });
+
+            elements.viewSwitchButtons.forEach((button) => {
+                button.addEventListener("click", () => switchAppView(button.dataset.appView));
+            });
+
+            elements.loginForm.addEventListener("submit", handleLogin);
+            elements.registerForm.addEventListener("submit", handleRegister);
+            elements.logoutButton.addEventListener("click", handleLogout);
+            elements.openRoleEditorButton.addEventListener("click", () => openRoleEditor());
+            elements.newSessionButton.addEventListener("click", startNewSession);
+            elements.refreshSessionsButton.addEventListener("click", fetchSessionList);
+            elements.clearSessionButton.addEventListener("click", clearCurrentSession);
+            elements.sendButton.addEventListener("click", sendMessage);
+            elements.messageInput.addEventListener("keydown", handleComposerKeydown);
+            elements.messageInput.addEventListener("input", autoResizeTextarea);
+            elements.uploadKnowledgeButton.addEventListener("click", handleKnowledgeUpload);
+            elements.refreshKnowledgeButton.addEventListener("click", () => fetchKnowledgeDocuments());
+            elements.knowledgeFile.addEventListener("change", syncKnowledgeFileMeta);
+            elements.roleEditorForm.addEventListener("submit", handleRoleEditorSubmit);
+            elements.closeRoleEditorButton.addEventListener("click", closeRoleEditor);
+            elements.cancelRoleEditorButton.addEventListener("click", closeRoleEditor);
+            elements.deleteRoleButton.addEventListener("click", handleDeleteRoleFromEditor);
+            elements.roleEditorOverlay.addEventListener("click", (event) => {
+                if (event.target === elements.roleEditorOverlay) {
+                    closeRoleEditor();
+                }
+            });
+        }
+
+        function switchAuth(mode) {
+            const isLogin = mode === "login";
+            elements.loginPanel.hidden = !isLogin;
+            elements.registerPanel.hidden = isLogin;
+            document.querySelectorAll("[data-auth-tab]").forEach((button) => {
+                button.classList.toggle("active", button.dataset.authTab === mode);
+            });
+        }
+
+        function showAuthView() {
+            elements.authView.hidden = false;
+            elements.appView.hidden = true;
+            switchAuth("login");
+        }
+
+        async function showAppView() {
+            elements.authView.hidden = true;
+            elements.appView.hidden = false;
+            elements.currentUserName.textContent = state.currentUser.name;
+            refreshRoleCatalog([], state.selectedRole && state.selectedRole.id);
+            renderRoleGrid();
+            renderWorkspace();
+            renderEmptyPrompts();
+            await fetchCustomRoles({ silent: true });
+            state.allSessions = loadCachedSessions();
+            filterSessionsByRole();
+            renderSessionList();
+            updateActiveSessionLabel();
+            autoResizeTextarea();
+            updateSessionStatus("\u5df2\u51c6\u5907\u5f00\u59cb\u54a8\u8be2");
+            await fetchSessionList();
+            await restoreRoleSession({ preferLatest: true, createIfMissing: true, silent: true });
+            updateSessionStatus("\u5df2\u6062\u590d\u5f53\u524d\u5f8b\u5e08\u7684\u72ec\u7acb\u4f1a\u8bdd");
+            await switchAppView(state.currentView, { refreshKnowledge: state.currentView === "knowledge", preserveStatus: true });
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const username = elements.loginUsername.value.trim();
+            const password = elements.loginPassword.value.trim();
+
+            if (!username || !password) {
+                showToast("请输入用户名和密码。", "error");
+                return;
+            }
+
+            setButtonLoading(elements.loginButton, true, "登录中...");
+
+            try {
+                const response = await fetch(`${API_BASE}/users/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await parseResponse(response);
+                state.currentUser = { id: String(data.id), name: data.username };
+                persistUser();
+                elements.loginForm.reset();
+                showToast("登录成功，正在进入工作台。", "success");
+                await showAppView();
+            } catch (error) {
+                showToast(error.message || "登录失败，请稍后重试。", "error");
+            } finally {
+                setButtonLoading(elements.loginButton, false, "立即登录");
+            }
+        }
+
+        async function handleRegister(event) {
+            event.preventDefault();
+
+            const username = elements.registerUsername.value.trim();
+            const email = elements.registerEmail.value.trim();
+            const password = elements.registerPassword.value.trim();
+            const confirmPassword = elements.registerConfirmPassword.value.trim();
+
+            if (!username || !email || !password || !confirmPassword) {
+                showToast("请完整填写注册信息。", "error");
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showToast("两次输入的密码不一致。", "error");
+                return;
+            }
+
+            setButtonLoading(elements.registerButton, true, "注册中...");
+
+            try {
+                const response = await fetch(`${API_BASE}/users/register`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                const data = await parseResponse(response);
+                state.currentUser = { id: String(data.id), name: data.username };
+                persistUser();
+                elements.registerForm.reset();
+                showToast("注册成功，已为你打开工作台。", "success");
+                await showAppView();
+            } catch (error) {
+                showToast(error.message || "注册失败，请稍后重试。", "error");
+            } finally {
+                setButtonLoading(elements.registerButton, false, "注册并进入系统");
+            }
+        }
+
+        function handleLogout() {
+            state.currentUser = null;
+            state.currentView = "chat";
+            state.currentSessionIds = {};
+            state.allSessions = [];
+            state.sessions = [];
+            state.knowledgeDocuments = [];
+            refreshRoleCatalog([], systemRoles[0].id);
+            closeRoleEditor();
+            localStorage.removeItem("legal_chat_current_user");
+            localStorage.removeItem("legal_chat_current_user_id");
+            elements.currentUserName.textContent = "\u8bbf\u5ba2";
+            elements.messageInput.value = "";
+            clearThread();
+            renderRoleGrid();
+            renderWorkspace();
+            renderEmptyPrompts();
+            renderKnowledgeDocuments([]);
+            renderSessionList();
+            showAuthView();
+            showToast("\u5df2\u9000\u51fa\u767b\u5f55", "info");
+        }
+
+        function persistUser() {
+            localStorage.setItem("legal_chat_current_user", state.currentUser.name);
+            localStorage.setItem("legal_chat_current_user_id", state.currentUser.id);
+        }
+
+        function getSessionCacheKey(userId = state.currentUser && state.currentUser.id) {
+            return userId ? `${SESSION_CACHE_PREFIX}${userId}` : "";
+        }
+
+        function getSessionMessagesCacheKey(sessionId, userId = state.currentUser && state.currentUser.id) {
+            if (!userId || !sessionId) return "";
+            return `${SESSION_MESSAGE_CACHE_PREFIX}${userId}_${sessionId}`;
+        }
+
+        function readStorageJson(key, fallback = []) {
+            if (!key) return fallback;
+            try {
+                const raw = localStorage.getItem(key);
+                if (!raw) return fallback;
+                const parsed = JSON.parse(raw);
+                return parsed ?? fallback;
+            } catch (error) {
+                return fallback;
+            }
+        }
+
+        function writeStorageJson(key, value) {
+            if (!key) return;
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+            } catch (error) {
+            }
+        }
+
+        function loadCachedSessions() {
+            return readStorageJson(getSessionCacheKey(), []);
+        }
+
+        function persistSessionCache() {
+            writeStorageJson(getSessionCacheKey(), state.allSessions);
+        }
+
+        function loadCachedSessionMessages(sessionId) {
+            return readStorageJson(getSessionMessagesCacheKey(sessionId), []);
+        }
+
+        function persistSessionMessages(sessionId, messages) {
+            writeStorageJson(getSessionMessagesCacheKey(sessionId), messages);
+        }
+
+        function appendCachedSessionMessage(sessionId, message) {
+            if (!sessionId || !message) return;
+            const existingMessages = loadCachedSessionMessages(sessionId);
+            existingMessages.push(message);
+            persistSessionMessages(sessionId, existingMessages);
+        }
+
+        function removeCachedSession(sessionId) {
+            if (!sessionId) return;
+            state.allSessions = state.allSessions.filter((item) => item.session_id !== sessionId);
+            filterSessionsByRole();
+            persistSessionCache();
+            const messageCacheKey = getSessionMessagesCacheKey(sessionId);
+            if (messageCacheKey) {
+                localStorage.removeItem(messageCacheKey);
+            }
+        }
+
+        function buildSessionPreview(content, fallback = "暂无内容") {
+            const text = String(content || "").trim();
+            if (!text) return fallback;
+            return text.length > 50 ? `${text.slice(0, 50)}...` : text;
+        }
+
+        function syncRoleUI() {
+            renderRoleGrid();
+            renderWorkspace();
+            renderEmptyPrompts();
+            filterSessionsByRole();
+            renderSessionList();
+            updateActiveSessionLabel();
+        }
+
+        function describeAnswerStyle(style) {
+            const mapping = {
+                professional: "\u4e13\u4e1a\u6743\u5a01",
+                formal: "\u6b63\u5f0f\u4e25\u8c28",
+                friendly: "\u53cb\u597d\u4eb2\u548c",
+                concise: "\u7b80\u6d01\u76f4\u63a5",
+                detailed: "\u8be6\u7ec6\u5168\u9762"
+            };
+            return mapping[style] || "\u4e13\u4e1a\u6743\u5a01";
+        }
+
+        function parseSpecialtiesInput(value) {
+            return String(value || "")
+                .split(/[\n,\uff0c]/)
+                .map((item) => item.trim())
+                .filter(Boolean)
+                .slice(0, 10);
+        }
+
+        function buildCustomRoleInternalName(displayName) {
+            const normalized = String(displayName || "")
+                .normalize("NFKD")
+                .replace(/[^\w]+/g, "_")
+                .replace(/^_+|_+$/g, "")
+                .toLowerCase();
+            const baseName = normalized || "custom_role";
+            const userSuffix = state.currentUser ? state.currentUser.id : "0";
+            return `${baseName}_${userSuffix}_${Date.now()}`;
+        }
+
+        function populateRoleEditor(role = null) {
+            elements.roleEditorForm.reset();
+            elements.customRoleStyle.value = "professional";
+
+            if (!role) {
+                state.roleEditorMode = "create";
+                state.editingRoleId = null;
+                elements.roleEditorTitle.textContent = "\u65b0\u5efa\u89d2\u8272";
+                elements.saveRoleButton.textContent = "\u4fdd\u5b58\u89d2\u8272";
+                elements.saveRoleButton.dataset.idleText = "\u4fdd\u5b58\u89d2\u8272";
+                elements.deleteRoleButton.hidden = true;
+                return;
+            }
+
+            state.roleEditorMode = "edit";
+            state.editingRoleId = role.id;
+            elements.roleEditorTitle.textContent = `\u7f16\u8f91${role.name}`;
+            elements.saveRoleButton.textContent = "\u4fdd\u5b58\u4fee\u6539";
+            elements.saveRoleButton.dataset.idleText = "\u4fdd\u5b58\u4fee\u6539";
+            elements.deleteRoleButton.hidden = false;
+            elements.customRoleName.value = role.name || "";
+            elements.customRoleStyle.value = role.answerStyle || "professional";
+            elements.customRoleDescription.value = role.description || "";
+            elements.customRoleSpecialties.value = (role.specialties || []).join("\uff0c");
+            elements.customRoleSystemPrompt.value = role.systemPrompt || "";
+        }
+
+        function openRoleEditor(roleId = null) {
+            if (!state.currentUser) {
+                showToast("\u8bf7\u5148\u767b\u5f55\u540e\u518d\u521b\u5efa\u89d2\u8272\u3002", "info");
+                return;
+            }
+
+            const role = roleId ? findRoleById(roleId) : null;
+            populateRoleEditor(role && role.isCustom ? role : null);
+            elements.roleEditorOverlay.hidden = false;
+            document.body.style.overflow = "hidden";
+            window.setTimeout(() => elements.customRoleName.focus(), 30);
+        }
+
+        function closeRoleEditor() {
+            elements.roleEditorOverlay.hidden = true;
+            document.body.style.overflow = "";
+            state.roleEditorMode = "create";
+            state.editingRoleId = null;
+            elements.roleEditorForm.reset();
+            elements.deleteRoleButton.hidden = true;
+            elements.saveRoleButton.textContent = "\u4fdd\u5b58\u89d2\u8272";
+            elements.saveRoleButton.dataset.idleText = "\u4fdd\u5b58\u89d2\u8272";
+        }
+
+        async function fetchCustomRoles({ silent = false } = {}) {
+            if (!state.currentUser) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/roles/custom/my?user_id=${encodeURIComponent(state.currentUser.id)}&limit=100`);
+                const data = await parseResponse(response);
+                const customRoles = Array.isArray(data) ? data.map(normalizeCustomRole) : [];
+                refreshRoleCatalog(customRoles, state.selectedRole && state.selectedRole.id);
+                syncRoleUI();
+            } catch (error) {
+                if (!silent) {
+                    showToast("\u6682\u65f6\u65e0\u6cd5\u8bfb\u53d6\u81ea\u5b9a\u4e49\u89d2\u8272\u3002", "info");
+                }
+            }
+        }
+
+        async function handleRoleEditorSubmit(event) {
+            event.preventDefault();
+
+            if (!state.currentUser) {
+                showToast("\u8bf7\u5148\u767b\u5f55\u540e\u518d\u4fdd\u5b58\u89d2\u8272\u3002", "error");
+                return;
+            }
+
+            const displayName = elements.customRoleName.value.trim();
+            const description = elements.customRoleDescription.value.trim();
+            const specialties = parseSpecialtiesInput(elements.customRoleSpecialties.value);
+            const answerStyle = elements.customRoleStyle.value || "professional";
+            const systemPrompt = elements.customRoleSystemPrompt.value.trim();
+
+            if (displayName.length < 2) {
+                showToast("\u89d2\u8272\u540d\u79f0\u81f3\u5c11\u9700\u8981 2 \u4e2a\u5b57\u3002", "error");
+                return;
+            }
+
+            if (description.length < 10) {
+                showToast("\u8bf7\u518d\u8865\u5145\u4e00\u4e0b\u89d2\u8272\u5b9a\u4f4d\uff0c\u81f3\u5c11 10 \u4e2a\u5b57\u3002", "error");
+                return;
+            }
+
+            if (specialties.length === 0) {
+                showToast("\u8bf7\u81f3\u5c11\u586b\u5199 1 \u4e2a\u4e13\u4e1a\u9886\u57df\u3002", "error");
+                return;
+            }
+
+            const isEditMode = state.roleEditorMode === "edit" && state.editingRoleId;
+            const editingRole = isEditMode ? findRoleById(state.editingRoleId) : null;
+
+            if (isEditMode && !editingRole) {
+                showToast("\u8981\u7f16\u8f91\u7684\u89d2\u8272\u4e0d\u5b58\u5728\u6216\u5df2\u88ab\u79fb\u9664\u3002", "error");
+                closeRoleEditor();
+                return;
+            }
+
+            const payload = {
+                display_name: displayName,
+                description,
+                specialties,
+                answer_style: answerStyle,
+                system_prompt: systemPrompt || null
+            };
+
+            if (!isEditMode) {
+                payload.name = buildCustomRoleInternalName(displayName);
+            }
+
+            setButtonLoading(
+                elements.saveRoleButton,
+                true,
+                isEditMode ? "\u4fdd\u5b58\u4e2d..." : "\u521b\u5efa\u4e2d..."
+            );
+
+            try {
+                const url = isEditMode && editingRole
+                    ? `${API_BASE}/roles/custom/${encodeURIComponent(editingRole.backendRoleId)}?user_id=${encodeURIComponent(state.currentUser.id)}`
+                    : `${API_BASE}/roles/custom?user_id=${encodeURIComponent(state.currentUser.id)}`;
+                const response = await fetch(url, {
+                    method: isEditMode ? "PUT" : "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await parseResponse(response);
+                const savedRole = normalizeCustomRole(data);
+                const nextCustomRoles = state.customRoles.filter((role) => role.id !== savedRole.id);
+                nextCustomRoles.unshift(savedRole);
+                refreshRoleCatalog(nextCustomRoles, savedRole.id);
+                closeRoleEditor();
+                syncRoleUI();
+                await restoreRoleSession({ preferLatest: true, createIfMissing: true, silent: true });
+                updateSessionStatus(`${savedRole.name} \u5df2\u51c6\u5907\u5c31\u7eea`);
+                showToast(
+                    isEditMode ? "\u89d2\u8272\u5df2\u4fdd\u5b58\u4fee\u6539\u3002" : "\u81ea\u5b9a\u4e49\u89d2\u8272\u5df2\u521b\u5efa\u3002",
+                    "success"
+                );
+            } catch (error) {
+                showToast(error.message || "\u4fdd\u5b58\u89d2\u8272\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5\u3002", "error");
+            } finally {
+                setButtonLoading(
+                    elements.saveRoleButton,
+                    false,
+                    isEditMode ? "\u4fdd\u5b58\u4fee\u6539" : "\u4fdd\u5b58\u89d2\u8272"
+                );
+            }
+        }
+
+        async function deleteCustomRole(roleId, { skipConfirm = false } = {}) {
+            const role = findRoleById(roleId);
+            if (!role || !role.isCustom || !state.currentUser) return false;
+
+            if (state.isSending) {
+                showToast("\u8bf7\u7b49\u5f85\u5f53\u524d\u56de\u590d\u5b8c\u6210\u540e\u518d\u5220\u9664\u89d2\u8272\u3002", "info");
+                return false;
+            }
+
+            if (!skipConfirm) {
+                const confirmed = window.confirm(`\u786e\u5b9a\u5220\u9664\u89d2\u8272\u201c${role.name}\u201d\u5417\uff1f`);
+                if (!confirmed) return false;
+            }
+
+            try {
+                const response = await fetch(
+                    `${API_BASE}/roles/custom/${encodeURIComponent(role.backendRoleId)}?user_id=${encodeURIComponent(state.currentUser.id)}`,
+                    { method: "DELETE" }
+                );
+                await parseResponse(response);
+
+                const wasSelected = state.selectedRole && state.selectedRole.id === role.id;
+                const nextCustomRoles = state.customRoles.filter((item) => item.id !== role.id);
+                delete state.currentSessionIds[role.id];
+                refreshRoleCatalog(nextCustomRoles, wasSelected ? systemRoles[0].id : (state.selectedRole && state.selectedRole.id));
+                closeRoleEditor();
+                syncRoleUI();
+
+                if (wasSelected) {
+                    await restoreRoleSession({ preferLatest: true, createIfMissing: true, silent: true });
+                    updateSessionStatus("\u5df2\u5207\u56de\u9ed8\u8ba4\u89d2\u8272");
+                }
+
+                showToast("\u81ea\u5b9a\u4e49\u89d2\u8272\u5df2\u5220\u9664\u3002", "success");
+                return true;
+            } catch (error) {
+                showToast(error.message || "\u5220\u9664\u89d2\u8272\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5\u3002", "error");
+                return false;
+            }
+        }
+
+        async function handleDeleteRoleFromEditor() {
+            if (!state.editingRoleId) return;
+            await deleteCustomRole(state.editingRoleId, { skipConfirm: false });
+        }
+
+        function renderRoleGrid() {
+            elements.roleGrid.innerHTML = "";
+            elements.customRoleCount.textContent = String(state.customRoles.length);
+            elements.customRoleEmpty.hidden = state.customRoles.length > 0;
+
+            state.customRoles.forEach((role) => {
+                const card = document.createElement("article");
+                const isActive = state.selectedRole.id === role.id;
+                card.className = `role-card ${isActive ? "active" : ""}`;
+
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "role-card-select";
+                button.addEventListener("click", () => selectRole(role.id));
+
+                const head = document.createElement("div");
+                head.className = "role-head";
+
+                const titleWrap = document.createElement("div");
+                const name = document.createElement("div");
+                name.className = "role-name";
+                name.textContent = role.name;
+                const styleLine = document.createElement("div");
+                styleLine.className = "role-card-meta";
+                styleLine.textContent = `${describeAnswerStyle(role.answerStyle)} · ${formatLegalField(role.knowledgeField)}`;
+                titleWrap.appendChild(name);
+                titleWrap.appendChild(styleLine);
+
+                const badge = document.createElement("span");
+                badge.className = "role-source-badge";
+                badge.textContent = "\u81ea\u5b9a\u4e49";
+                head.appendChild(titleWrap);
+                head.appendChild(badge);
+
+                const desc = document.createElement("p");
+                desc.className = "role-card-line";
+                desc.textContent = role.description;
+
+                const specialties = document.createElement("p");
+                specialties.className = "role-card-line";
+                specialties.textContent = role.specialties.length > 0
+                    ? `\u4e13\u4e1a\u9886\u57df\uff1a${role.specialties.join("\uff0c")}`
+                    : "\u672a\u8bbe\u7f6e\u4e13\u4e1a\u9886\u57df";
+
+                button.appendChild(head);
+                button.appendChild(desc);
+                button.appendChild(specialties);
+                card.appendChild(button);
+
+                const actions = document.createElement("div");
+                actions.className = "role-card-actions";
+
+                const editButton = document.createElement("button");
+                editButton.type = "button";
+                editButton.className = "mini-action-btn";
+                editButton.textContent = "\u7f16\u8f91";
+                editButton.addEventListener("click", (event) => {
+                    event.stopPropagation();
+                    openRoleEditor(role.id);
+                });
+
+                const deleteButton = document.createElement("button");
+                deleteButton.type = "button";
+                deleteButton.className = "mini-danger-btn";
+                deleteButton.textContent = "\u5220\u9664";
+                deleteButton.addEventListener("click", async (event) => {
+                    event.stopPropagation();
+                    await deleteCustomRole(role.id);
+                });
+
+                actions.appendChild(editButton);
+                actions.appendChild(deleteButton);
+                card.appendChild(actions);
+                elements.roleGrid.appendChild(card);
+            });
+        }
+
+        async function selectRole(roleId) {
+            if (state.isSending) {
+                showToast("\u8bf7\u7b49\u5f85\u5f53\u524d\u56de\u590d\u5b8c\u6210\u540e\u518d\u5207\u6362\u5f8b\u5e08", "info");
+                return;
+            }
+
+            const nextRole = findRoleById(roleId);
+            if (!nextRole) return;
+
+            state.selectedRole = nextRole;
+            syncRoleUI();
+            await restoreRoleSession({ preferLatest: true, createIfMissing: true, silent: true });
+            updateSessionStatus(state.currentView === "knowledge"
+                ? `${nextRole.name} \u7684\u5165\u5e93\u9886\u57df\u5df2\u5207\u6362`
+                : `${nextRole.name} \u7684\u5bf9\u8bdd\u89c6\u89d2\u5df2\u5207\u6362`);
+        }
+
+        function renderWorkspace() {
+            elements.workspaceTitle.textContent = state.selectedRole.name;
+            elements.workspaceDescription.textContent = state.selectedRole.description;
+            elements.workspaceMeta.innerHTML = "";
+            elements.featuredRoleRow.innerHTML = "";
+            elements.shortcutRow.innerHTML = "";
+
+            state.selectedRole.specialties.forEach((specialty) => {
+                const chip = document.createElement("span");
+                chip.className = "meta-chip";
+                chip.textContent = specialty;
+                elements.workspaceMeta.appendChild(chip);
+            });
+
+            if (state.selectedRole.isCustom) {
+                const customChip = document.createElement("span");
+                customChip.className = "meta-chip";
+                customChip.textContent = `\u81ea\u5b9a\u4e49 · ${describeAnswerStyle(state.selectedRole.answerStyle)}`;
+                elements.workspaceMeta.appendChild(customChip);
+            }
+
+            const featuredRoleIds = ["lawyer", "criminal_lawyer", "labor_lawyer", "family_lawyer", "contract_lawyer"];
+            featuredRoleIds
+                .map((roleId) => systemRoles.find((role) => role.id === roleId))
+                .filter(Boolean)
+                .forEach((role) => {
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = `featured-role-card ${state.selectedRole.id === role.id ? "active" : ""}`;
+                    button.addEventListener("click", () => selectRole(role.id));
+
+                    const name = document.createElement("span");
+                    name.className = "featured-role-name";
+                    name.textContent = role.name;
+
+                    const desc = document.createElement("span");
+                    desc.className = "featured-role-desc";
+                    desc.textContent = role.specialties[0] || role.description;
+
+                    button.appendChild(name);
+                    button.appendChild(desc);
+                    elements.featuredRoleRow.appendChild(button);
+                });
+
+            state.selectedRole.prompts.forEach((prompt) => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "shortcut-chip";
+                button.textContent = prompt;
+                button.addEventListener("click", () => fillPrompt(prompt));
+                elements.shortcutRow.appendChild(button);
+            });
+
+            syncKnowledgePanel();
+            renderKnowledgeDocuments(state.knowledgeDocuments);
+        }
+
+        async function switchAppView(view, { refreshKnowledge = false, preserveStatus = false } = {}) {
+            const nextView = view === "knowledge" ? "knowledge" : "chat";
+            state.currentView = nextView;
+
+            elements.chatStage.hidden = nextView !== "chat";
+            elements.knowledgeStage.hidden = nextView !== "knowledge";
+            elements.viewSwitchButtons.forEach((button) => {
+                button.classList.toggle("active", button.dataset.appView === nextView);
+            });
+
+            if (nextView === "knowledge") {
+                syncKnowledgePanel();
+                renderKnowledgeDocuments(state.knowledgeDocuments);
+                if (refreshKnowledge || state.knowledgeDocuments.length === 0) {
+                    await fetchKnowledgeDocuments({ silent: true });
+                }
+                if (!preserveStatus) {
+                    updateSessionStatus("\u5df2\u8fdb\u5165\u77e5\u8bc6\u5165\u5e93\u9875\u9762");
+                }
+                return;
+            }
+
+            if (!preserveStatus) {
+                updateSessionStatus(`${state.selectedRole.name} \u7684\u5bf9\u8bdd\u5df2\u5c31\u7eea`);
+            }
+        }
+
+        function syncKnowledgePanel() {
+            const currentRole = state.selectedRole || systemRoles[0];
+            const roleField = currentRole.knowledgeField || "general";
+
+            elements.knowledgeRoleLabel.textContent = `${currentRole.name}\u8d44\u6599\u5e93`;
+            elements.knowledgeRoleHint.textContent = `\u5f53\u524d\u5c06\u9ed8\u8ba4\u6309\u201c${formatLegalField(roleField)}\u201d\u9886\u57df\u5165\u5e93\uff0c\u5e76\u540c\u6b65\u5199\u5165 Milvus \u77e5\u8bc6\u5e93\u3002`;
+            elements.knowledgeListHint.textContent = roleField === "general"
+                ? "\u5f53\u524d\u4e3a\u7efc\u5408\u89d2\u8272\uff0c\u5217\u8868\u663e\u793a\u5168\u90e8\u5df2\u5165\u5e93\u6587\u6863\u3002"
+                : `\u5f53\u524d\u6309\u201c${formatLegalField(roleField)}\u201d\u9886\u57df\u7b5b\u9009\uff0c\u901a\u7528\u8d44\u6599\u4f1a\u4e00\u5e76\u663e\u793a\u3002`;
+            elements.knowledgeLegalField.value = roleField;
+        }
+
+        function getRoleKnowledgeDocuments(documents) {
+            const roleField = state.selectedRole && state.selectedRole.knowledgeField
+                ? state.selectedRole.knowledgeField
+                : "general";
+
+            if (roleField === "general") {
+                return documents || [];
+            }
+
+            return (documents || []).filter((doc) => {
+                const field = doc.legal_field || "general";
+                return field === roleField || field === "general";
+            });
+        }
+
+        function syncKnowledgeFileMeta() {
+            const file = elements.knowledgeFile.files && elements.knowledgeFile.files[0];
+            if (!file) return;
+
+            if (!elements.knowledgeTitle.value.trim()) {
+                elements.knowledgeTitle.value = file.name.replace(/\.[^.]+$/, "");
+            }
+
+            if (!elements.knowledgeSource.value.trim()) {
+                elements.knowledgeSource.value = file.name;
+            }
+        }
+
+        async function handleKnowledgeUpload() {
+            if (!state.currentUser) {
+                showToast("\u8bf7\u5148\u767b\u5f55\u540e\u518d\u4e0a\u4f20\u6587\u4ef6\u3002", "error");
+                return;
+            }
+
+            const file = elements.knowledgeFile.files && elements.knowledgeFile.files[0];
+            if (!file) {
+                showToast("\u8bf7\u5148\u9009\u62e9\u8981\u5165\u5e93\u7684\u6587\u4ef6\u3002", "error");
+                return;
+            }
+
+            const title = elements.knowledgeTitle.value.trim() || file.name.replace(/\.[^.]+$/, "");
+            const payload = {
+                title,
+                doc_type: elements.knowledgeDocType.value || "general",
+                legal_field: elements.knowledgeLegalField.value || state.selectedRole.knowledgeField || "general",
+                source: elements.knowledgeSource.value.trim() || file.name,
+                filename: file.name,
+                content_base64: await readFileAsBase64(file)
+            };
+
+            setButtonLoading(elements.uploadKnowledgeButton, true, "\u5165\u5e93\u4e2d...");
+
+            try {
+                const response = await fetch(`${API_BASE}/knowledge/upload-file-json`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                await parseResponse(response);
+                showToast("\u6587\u4ef6\u5df2\u6210\u529f\u5199\u5165 Milvus \u77e5\u8bc6\u5e93\u3002", "success");
+                elements.knowledgeFile.value = "";
+                elements.knowledgeTitle.value = "";
+                elements.knowledgeSource.value = "";
+                await fetchKnowledgeDocuments({ silent: true });
+            } catch (error) {
+                showToast(error.message || "\u6587\u4ef6\u5165\u5e93\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5\u3002", "error");
+            } finally {
+                setButtonLoading(elements.uploadKnowledgeButton, false, "\u4e0a\u4f20\u5e76\u5165\u5e93");
+            }
+        }
+
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const result = String(reader.result || "");
+                    const commaIndex = result.indexOf(",");
+                    resolve(commaIndex >= 0 ? result.slice(commaIndex + 1) : result);
+                };
+                reader.onerror = () => reject(new Error("\u6587\u4ef6\u8bfb\u53d6\u5931\u8d25"));
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function fetchKnowledgeDocuments({ silent = false } = {}) {
+            if (!state.currentUser) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/knowledge/documents?limit=100`);
+                const data = await parseResponse(response);
+                state.knowledgeDocuments = Array.isArray(data) ? data : [];
+                renderKnowledgeDocuments(state.knowledgeDocuments);
+            } catch (error) {
+                renderKnowledgeDocuments([]);
+                if (!silent) {
+                    showToast("\u6682\u65f6\u65e0\u6cd5\u8bfb\u53d6\u77e5\u8bc6\u5e93\u6587\u6863\u5217\u8868\u3002", "info");
+                }
+            }
+        }
+
+        function renderKnowledgeDocuments(documents) {
+            if (!elements.knowledgeDocList) return;
+
+            elements.knowledgeDocList.innerHTML = "";
+            const filteredDocuments = getRoleKnowledgeDocuments(documents || []);
+            elements.knowledgeDocCount.textContent = String(filteredDocuments.length);
+
+            if (!filteredDocuments.length) {
+                const empty = document.createElement("div");
+                empty.className = "knowledge-empty";
+                empty.textContent = state.selectedRole
+                    ? `${state.selectedRole.name}\u76f8\u5173\u7684\u5165\u5e93\u6587\u6863\u6682\u65f6\u4e3a\u7a7a\uff0c\u4e0a\u4f20\u540e\u4f1a\u663e\u793a\u5728\u8fd9\u91cc\u3002`
+                    : "\u6682\u65f6\u8fd8\u6ca1\u6709\u5df2\u5165\u5e93\u6587\u6863\u3002";
+                elements.knowledgeDocList.appendChild(empty);
+                return;
+            }
+
+            filteredDocuments.forEach((doc) => {
+                const item = document.createElement("article");
+                item.className = "knowledge-doc-item";
+
+                const top = document.createElement("div");
+                top.className = "knowledge-doc-top";
+
+                const title = document.createElement("h4");
+                title.className = "knowledge-doc-title";
+                title.textContent = doc.title || "\u672a\u547d\u540d\u6587\u6863";
+
+                const status = document.createElement("span");
+                status.className = "knowledge-status";
+                status.textContent = formatKnowledgeStatus(doc.status);
+
+                top.appendChild(title);
+                top.appendChild(status);
+
+                const meta = document.createElement("p");
+                meta.className = "knowledge-doc-meta";
+                meta.textContent = `${formatKnowledgeDocType(doc.doc_type)} · ${formatLegalField(doc.legal_field)} · ${doc.chunk_count || 0} \u6bb5 · ${formatDateTime(doc.created_at)}`;
+
+                const source = document.createElement("p");
+                source.className = "knowledge-doc-meta";
+                source.textContent = `\u6765\u6e90\uff1a${doc.source || "\u672a\u586b\u5199"}`;
+
+                item.appendChild(top);
+                item.appendChild(meta);
+                item.appendChild(source);
+                elements.knowledgeDocList.appendChild(item);
+            });
+        }
+
+        function formatKnowledgeStatus(status) {
+            if (status === "completed") return "\u5df2\u5165\u5e93";
+            if (status === "processing") return "\u5904\u7406\u4e2d";
+            if (status === "failed") return "\u5931\u8d25";
+            return "\u672a\u77e5";
+        }
+
+        function formatKnowledgeDocType(type) {
+            const mapping = {
+                law: "\u6cd5\u5f8b\u6761\u6587",
+                case: "\u6848\u4f8b\u6750\u6599",
+                guide: "\u529e\u4e8b\u6307\u5f15",
+                interpretation: "\u53f8\u6cd5\u89e3\u91ca",
+                general: "\u5176\u4ed6\u8d44\u6599"
+            };
+            return mapping[type] || "\u5176\u4ed6\u8d44\u6599";
+        }
+
+        function formatLegalField(field) {
+            const mapping = {
+                general: "\u7efc\u5408",
+                civil: "\u6c11\u4e8b",
+                criminal: "\u5211\u4e8b",
+                labor: "\u52b3\u52a8",
+                contract: "\u5408\u540c",
+                family: "\u5a5a\u59fb\u5bb6\u4e8b",
+                company: "\u516c\u53f8",
+                administrative: "\u884c\u653f"
+            };
+            return mapping[field] || "\u7efc\u5408";
+        }
+
+        function renderEmptyPrompts() {
+            elements.emptyPromptChips.innerHTML = "";
+            state.selectedRole.prompts.forEach((prompt) => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "empty-chip";
+                button.textContent = prompt;
+                button.addEventListener("click", () => fillPrompt(prompt));
+                elements.emptyPromptChips.appendChild(button);
+            });
+        }
+
+        function fillPrompt(prompt) {
+            elements.messageInput.value = prompt;
+            autoResizeTextarea();
+            elements.messageInput.focus();
+        }
+
+        function handleComposerKeydown(event) {
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function autoResizeTextarea() {
+            const textarea = elements.messageInput;
+            textarea.style.height = "auto";
+            textarea.style.height = `${Math.min(textarea.scrollHeight, 260)}px`;
+        }
+
+        function buildSessionId(roleId = state.selectedRole.id) {
+            return `${roleId}${SESSION_ROLE_SEPARATOR}${state.currentUser.id}-${Date.now()}`;
+        }
+
+        function extractRoleIdFromSessionId(sessionId) {
+            if (!sessionId || !sessionId.includes(SESSION_ROLE_SEPARATOR)) {
+                return systemRoles[0].id;
+            }
+
+            const [roleId] = sessionId.split(SESSION_ROLE_SEPARATOR);
+            return roleId || systemRoles[0].id;
+        }
+
+        function sessionBelongsToRole(sessionId, roleId = state.selectedRole.id) {
+            if (!sessionId) return false;
+            if (sessionId.startsWith(`${roleId}${SESSION_ROLE_SEPARATOR}`)) {
+                return true;
+            }
+
+            return roleId === "lawyer" && !sessionId.includes(SESSION_ROLE_SEPARATOR);
+        }
+
+        function getCurrentSessionId(roleId = state.selectedRole.id) {
+            return state.currentSessionIds[roleId] || null;
+        }
+
+        function setCurrentSessionId(sessionId, roleId = state.selectedRole.id) {
+            if (sessionId) {
+                state.currentSessionIds[roleId] = sessionId;
+            } else {
+                delete state.currentSessionIds[roleId];
+            }
+        }
+
+        function filterSessionsByRole() {
+            state.sessions = state.allSessions.filter((item) => sessionBelongsToRole(item.session_id, state.selectedRole.id));
+        }
+
+        function mergeSessionCollections(baseSessions = [], incomingSessions = []) {
+            const merged = new Map();
+
+            [...baseSessions, ...incomingSessions].forEach((session) => {
+                if (!session || !session.session_id) return;
+
+                const existing = merged.get(session.session_id);
+                if (!existing) {
+                    merged.set(session.session_id, { ...session });
+                    return;
+                }
+
+                const existingTime = new Date(existing.last_time || 0).getTime();
+                const nextTime = new Date(session.last_time || 0).getTime();
+                const preferNext = Number.isFinite(nextTime) && nextTime >= existingTime;
+
+                merged.set(session.session_id, {
+                    ...existing,
+                    ...session,
+                    last_message: session.last_message || existing.last_message || "暂无内容",
+                    last_time: preferNext
+                        ? (session.last_time || existing.last_time)
+                        : (existing.last_time || session.last_time)
+                });
+            });
+
+            return Array.from(merged.values()).sort((left, right) => {
+                const leftTime = new Date(left.last_time || 0).getTime();
+                const rightTime = new Date(right.last_time || 0).getTime();
+                return rightTime - leftTime;
+            });
+        }
+
+        function upsertSessionEntry(session) {
+            state.allSessions = mergeSessionCollections(state.allSessions, [session]);
+            filterSessionsByRole();
+            persistSessionCache();
+        }
+
+        async function restoreRoleSession({ preferLatest = false, createIfMissing = false, silent = false } = {}) {
+            const activeSessionId = getCurrentSessionId();
+            const activeExists = activeSessionId && state.sessions.some((item) => item.session_id === activeSessionId);
+
+            if (activeExists) {
+                await loadSession(activeSessionId, silent);
+                return;
+            }
+
+            if (preferLatest && state.sessions.length > 0) {
+                await loadSession(state.sessions[0].session_id, silent);
+                return;
+            }
+
+            if (createIfMissing) {
+                await startNewSession(silent);
+                return;
+            }
+
+            clearThread();
+            showEmptyState();
+            updateActiveSessionLabel();
+        }
+
+        function ensureSessionId() {
+            let sessionId = getCurrentSessionId();
+            if (!sessionId) {
+                sessionId = buildSessionId();
+                setCurrentSessionId(sessionId);
+                updateActiveSessionLabel();
+            }
+            return sessionId;
+        }
+
+        async function sendMessage() {
+            if (state.isSending) return;
+
+            const message = elements.messageInput.value.trim();
+            if (!message) {
+                showToast("请先输入你的问题。", "error");
+                return;
+            }
+
+            if (!state.currentUser) {
+                showToast("请先登录后再提问。", "error");
+                return;
+            }
+
+            const sessionId = ensureSessionId();
+            const userTimestamp = new Date().toISOString();
+            const requestData = {
+                message,
+                user_id: state.currentUser.id,
+                session_id: sessionId,
+                role_id: state.selectedRole.backendRoleId,
+                legal_field: state.selectedRole.knowledgeField && state.selectedRole.knowledgeField !== "general"
+                    ? state.selectedRole.knowledgeField
+                    : null,
+                stream: elements.streamCheck.checked
+            };
+
+            state.isSending = true;
+            setComposerLoading(true);
+            hideEmptyState();
+            appendUserMessage(message, userTimestamp);
+            appendCachedSessionMessage(sessionId, {
+                role: "user",
+                content: message,
+                timestamp: userTimestamp,
+                citations: []
+            });
+            upsertSessionEntry({
+                session_id: sessionId,
+                last_message: buildSessionPreview(message, "新会话"),
+                last_time: userTimestamp
+            });
+            elements.messageInput.value = "";
+            autoResizeTextarea();
+            updateSessionStatus("正在生成回答...");
+
+            const slowNoticeTimer = window.setTimeout(() => {
+                if (state.isSending) {
+                    updateSessionStatus("已超过30秒，继续生成中...");
+                }
+            }, CHAT_SOFT_TARGET_MS);
+
+            try {
+                if (elements.streamCheck.checked) {
+                    await sendStreamRequest(requestData);
+                } else {
+                    await sendNormalRequest(requestData);
+                }
+
+                await fetchSessionList();
+                updateSessionStatus("回答已生成");
+            } catch (error) {
+                showToast(error.message || "发送失败，请稍后重试。", "error");
+                updateSessionStatus("发送失败，请稍后重试");
+            } finally {
+                window.clearTimeout(slowNoticeTimer);
+                state.isSending = false;
+                setComposerLoading(false);
+            }
+        }
+
+        async function sendNormalRequest(requestData) {
+            const response = await fetchWithTimeout(`${API_BASE}/chat`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(requestData)
+            });
+
+            const data = await parseResponse(response);
+            setCurrentSessionId(data.session_id || requestData.session_id);
+            updateActiveSessionLabel();
+            appendAssistantMessage(data);
+            appendCachedSessionMessage(data.session_id || requestData.session_id, {
+                role: "assistant",
+                content: data.reply || "",
+                timestamp: new Date().toISOString(),
+                citations: data.citations || []
+            });
+        }
+
+        async function sendStreamRequest(requestData) {
+            const response = await fetchWithTimeout(`${API_BASE}/chat/stream`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(requestData)
+            });
+
+            if (!response.ok || !response.body) {
+                const error = await parseResponse(response);
+                throw new Error(error.detail || "流式回答失败。");
+            }
+
+            setCurrentSessionId(requestData.session_id);
+            updateActiveSessionLabel();
+
+            const streamHandle = createStreamingAssistantMessage();
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder("utf-8");
+            let buffer = "";
+            let fullText = "";
+            let streamCompleted = false;
+
+            function applyChunkPayload(payload) {
+                if (payload === "[DONE]") {
+                    streamCompleted = true;
+                    streamHandle.finish(fullText);
+                    appendCachedSessionMessage(requestData.session_id, {
+                        role: "assistant",
+                        content: fullText,
+                        timestamp: new Date().toISOString(),
+                        citations: []
+                    });
+                    loadSession(getCurrentSessionId(), true).catch(() => {});
+                    return true;
+                }
+
+                let chunkText = payload;
+                try {
+                    const parsedPayload = JSON.parse(payload);
+                    if (parsedPayload && parsedPayload.type === "chunk") {
+                        chunkText = parsedPayload.content || "";
+                    }
+                } catch (error) {
+                }
+
+                fullText += chunkText;
+                streamHandle.update(fullText);
+                return false;
+            }
+
+            function consumeBuffer(forceFlush = false) {
+                const lines = buffer.split("\n");
+                buffer = lines.pop() || "";
+
+                for (const rawLine of lines) {
+                    const line = rawLine.trim();
+                    if (!line.startsWith("data: ")) continue;
+                    if (applyChunkPayload(line.slice(6))) {
+                        return true;
+                    }
+                }
+
+                if (forceFlush) {
+                    const trailingLine = buffer.trim();
+                    buffer = "";
+                    if (trailingLine.startsWith("data: ")) {
+                        return applyChunkPayload(trailingLine.slice(6));
+                    }
+                }
+
+                return false;
+            }
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) {
+                    buffer += decoder.decode();
+                    consumeBuffer(true);
+                    break;
+                }
+
+                buffer += decoder.decode(value, { stream: true });
+                if (consumeBuffer()) {
+                    return;
+                }
+            }
+
+            if (!streamCompleted) {
+                streamHandle.finish(fullText);
+                appendCachedSessionMessage(requestData.session_id, {
+                    role: "assistant",
+                    content: fullText,
+                    timestamp: new Date().toISOString(),
+                    citations: []
+                });
+            }
+        }
+
+        function appendUserMessage(content, timestamp = new Date().toISOString()) {
+            const message = buildMessage({
+                role: "user",
+                author: state.currentUser ? state.currentUser.name : "你",
+                content,
+                timestamp
+            });
+
+            elements.chatThread.appendChild(message);
+            scrollThreadToBottom();
+        }
+
+        function appendAssistantMessage(data, timestamp = new Date().toISOString()) {
+            const message = buildMessage({
+                role: "assistant",
+                author: state.selectedRole.name,
+                content: data.reply || "",
+                timestamp,
+                citations: data.citations || [],
+                suggestions: data.suggested_questions || [],
+                disclaimer: data.disclaimer || "",
+                riskLevel: data.risk_level || "low"
+            });
+
+            elements.chatThread.appendChild(message);
+            scrollThreadToBottom();
+        }
+
+        function createStreamingAssistantMessage() {
+            const message = buildMessage({
+                role: "assistant",
+                author: state.selectedRole.name,
+                content: "",
+                timestamp: new Date().toISOString(),
+                isStreaming: true
+            });
+
+            const bubble = message.querySelector(".message-bubble");
+            const streamText = document.createElement("div");
+            streamText.className = "message-markdown message-markdown-streaming";
+            let streamStarted = false;
+            let pendingContent = "";
+            let flushTimer = 0;
+            let lastRenderedContent = null;
+            const STREAM_RENDER_INTERVAL_MS = 48;
+            elements.chatThread.appendChild(message);
+            scrollThreadToBottom();
+
+            function ensureStreamNode() {
+                if (streamStarted) return;
+                bubble.innerHTML = "";
+                bubble.appendChild(streamText);
+                streamStarted = true;
+            }
+
+            function renderStreamingMarkdown(content) {
+                ensureStreamNode();
+                streamText.replaceChildren(renderMarkdownFragment(content || " "));
+                scrollThreadToBottom();
+            }
+
+            function flushStreamContent() {
+                flushTimer = 0;
+                if (pendingContent === lastRenderedContent) {
+                    return;
+                }
+                lastRenderedContent = pendingContent;
+                renderStreamingMarkdown(pendingContent);
+            }
+
+            function scheduleFlush(immediate = false) {
+                if (immediate) {
+                    if (flushTimer) {
+                        window.clearTimeout(flushTimer);
+                        flushTimer = 0;
+                    }
+                    flushStreamContent();
+                    return;
+                }
+
+                if (flushTimer) return;
+                flushTimer = window.setTimeout(flushStreamContent, STREAM_RENDER_INTERVAL_MS);
+            }
+
+            return {
+                update(content) {
+                    pendingContent = sanitizeAssistantContent(content || " ");
+                    scheduleFlush();
+                },
+                finish(content) {
+                    pendingContent = sanitizeAssistantContent(content || "未返回内容。");
+                    if (flushTimer) {
+                        window.clearTimeout(flushTimer);
+                        flushTimer = 0;
+                    }
+                    setBubbleContent(bubble, pendingContent || "未返回内容。", true);
+                    scrollThreadToBottom();
+                }
+            };
+        }
+
+        function setBubbleContent(bubble, content, isMarkdown = false) {
+            bubble.innerHTML = "";
+            const sanitizedContent = sanitizeAssistantContent(content);
+
+            if (!isMarkdown) {
+                bubble.textContent = sanitizedContent;
+                return;
+            }
+
+            const markdown = document.createElement("div");
+            markdown.className = "message-markdown";
+            if (hasBalancedMarkdownMarkers(sanitizedContent)) {
+                markdown.appendChild(renderMarkdownFragment(sanitizedContent || ""));
+            } else {
+                markdown.textContent = sanitizedContent || "";
+            }
+            bubble.appendChild(markdown);
+        }
+
+        function sanitizeAssistantContent(content) {
+            return String(content || "")
+                .replace(/\r/g, "")
+                .replace(/\u00a0/g, " ");
+        }
+
+        function hasBalancedMarkdownMarkers(content) {
+            const text = String(content || "");
+            const strongCount = (text.match(/\*\*/g) || []).length;
+            const backtickCount = (text.match(/`/g) || []).length;
+            return strongCount % 2 === 0 && backtickCount % 2 === 0;
+        }
+
+        function renderMarkdownFragment(content) {
+            const fragment = document.createDocumentFragment();
+            const lines = String(content || "").replace(/\r/g, "").split("\n");
+            let currentList = null;
+            let currentListType = "";
+            let paragraphLines = [];
+
+            function flushParagraph() {
+                if (paragraphLines.length === 0) return;
+                const paragraph = document.createElement("p");
+                appendInlineMarkdown(paragraph, paragraphLines.join("\n"));
+                fragment.appendChild(paragraph);
+                paragraphLines = [];
+            }
+
+            function resetList() {
+                currentList = null;
+                currentListType = "";
+            }
+
+            function ensureList(type) {
+                if (currentList && currentListType === type) {
+                    return currentList;
+                }
+
+                currentList = document.createElement(type);
+                currentListType = type;
+                fragment.appendChild(currentList);
+                return currentList;
+            }
+
+            lines.forEach((rawLine) => {
+                const line = rawLine.replace(/\u00a0/g, " ").trimEnd();
+                const trimmed = line.trim();
+
+                if (!trimmed) {
+                    flushParagraph();
+                    resetList();
+                    return;
+                }
+
+                const headingMatch = trimmed.match(/^(#{1,6})\s+(.*)$/);
+                if (headingMatch) {
+                    flushParagraph();
+                    resetList();
+                    const level = Math.min(Math.max(headingMatch[1].length, 2), 3);
+                    const heading = document.createElement(`h${level}`);
+                    appendInlineMarkdown(heading, headingMatch[2]);
+                    fragment.appendChild(heading);
+                    return;
+                }
+
+                const orderedMatch = trimmed.match(/^(\d+)\.\s+(.*)$/);
+                if (orderedMatch) {
+                    flushParagraph();
+                    const list = ensureList("ol");
+                    const item = document.createElement("li");
+                    appendInlineMarkdown(item, orderedMatch[2]);
+                    list.appendChild(item);
+                    return;
+                }
+
+                const unorderedMatch = trimmed.match(/^[-*]\s+(.*)$/);
+                if (unorderedMatch) {
+                    flushParagraph();
+                    const list = ensureList("ul");
+                    const item = document.createElement("li");
+                    appendInlineMarkdown(item, unorderedMatch[1]);
+                    list.appendChild(item);
+                    return;
+                }
+
+                resetList();
+                paragraphLines.push(line);
+            });
+
+            flushParagraph();
+
+            if (!fragment.hasChildNodes()) {
+                const paragraph = document.createElement("p");
+                paragraph.textContent = content || " ";
+                fragment.appendChild(paragraph);
+            }
+
+            return fragment;
+        }
+
+        function appendInlineMarkdown(target, text) {
+            const source = String(text || "");
+            let index = 0;
+
+            while (index < source.length) {
+                if (source.startsWith("**", index)) {
+                    const end = source.indexOf("**", index + 2);
+                    if (end !== -1) {
+                        const strong = document.createElement("strong");
+                        strong.textContent = source.slice(index + 2, end);
+                        target.appendChild(strong);
+                        index = end + 2;
+                        continue;
+                    }
+                }
+
+                if (source.startsWith("`", index)) {
+                    const end = source.indexOf("`", index + 1);
+                    if (end !== -1) {
+                        const code = document.createElement("code");
+                        code.textContent = source.slice(index + 1, end);
+                        target.appendChild(code);
+                        index = end + 1;
+                        continue;
+                    }
+                }
+
+                target.appendChild(document.createTextNode(source[index]));
+                index += 1;
+            }
+        }
+
+        function buildMessage({ role, author, content, timestamp, citations = [], suggestions = [], disclaimer = "", riskLevel = "", isStreaming = false }) {
+            const wrapper = document.createElement("article");
+            wrapper.className = `message ${role}`;
+
+            const meta = document.createElement("div");
+            meta.className = "message-meta-row";
+
+            const authorEl = document.createElement("span");
+            authorEl.className = "message-author";
+            authorEl.textContent = author;
+
+            const timeEl = document.createElement("span");
+            timeEl.textContent = formatTime(timestamp);
+
+            meta.appendChild(authorEl);
+            meta.appendChild(timeEl);
+
+            if (role === "assistant" && riskLevel) {
+                const risk = document.createElement("span");
+                risk.className = `risk-chip ${riskLevel}`;
+                risk.textContent = riskText(riskLevel);
+                meta.appendChild(risk);
+            }
+
+            const bubble = document.createElement("div");
+            bubble.className = "message-bubble";
+
+            if (isStreaming && !content) {
+                const typing = document.createElement("span");
+                typing.className = "typing-text";
+                typing.textContent = "正在生成回答...";
+                bubble.appendChild(typing);
+            } else {
+                setBubbleContent(bubble, content, role === "assistant");
+            }
+
+            wrapper.appendChild(meta);
+            wrapper.appendChild(bubble);
+
+            const hasExtra = citations.length > 0 || suggestions.length > 0 || disclaimer;
+            if (role === "assistant" && hasExtra) {
+                const extra = document.createElement("div");
+                extra.className = "message-extra";
+
+                if (citations.length > 0) {
+                    const citationsTitle = document.createElement("div");
+                    citationsTitle.className = "message-extra-title";
+                    citationsTitle.textContent = "相关法律条款";
+                    extra.appendChild(citationsTitle);
+
+                    const citationsWrap = document.createElement("div");
+                    citationsWrap.className = "message-citations";
+                    citations.slice(0, 3).forEach((citation) => {
+                        const item = document.createElement("div");
+                        item.className = "message-citation";
+
+                        const title = document.createElement("strong");
+                        title.textContent = citation.article
+                            ? `${citation.source || "法律依据"} ${citation.article}`
+                            : (citation.source || "相关法律依据");
+
+                        const body = document.createElement("p");
+                        body.textContent = citation.content || "未提供引用摘要。";
+
+                        item.appendChild(title);
+                        item.appendChild(body);
+                        citationsWrap.appendChild(item);
+                    });
+                    extra.appendChild(citationsWrap);
+                }
+
+                if (suggestions.length > 0) {
+                    const suggestionTitle = document.createElement("div");
+                    suggestionTitle.className = "message-extra-title";
+                    suggestionTitle.textContent = "继续追问";
+                    extra.appendChild(suggestionTitle);
+
+                    const suggestionRow = document.createElement("div");
+                    suggestionRow.className = "suggestion-row";
+
+                    suggestions.slice(0, 3).forEach((question) => {
+                        const button = document.createElement("button");
+                        button.type = "button";
+                        button.className = "suggest-chip";
+                        button.textContent = question;
+                        button.addEventListener("click", () => fillPrompt(question));
+                        suggestionRow.appendChild(button);
+                    });
+
+                    extra.appendChild(suggestionRow);
+                }
+
+                if (disclaimer) {
+                    const disclaimerBox = document.createElement("div");
+                    disclaimerBox.className = "message-disclaimer";
+                    disclaimerBox.textContent = disclaimer;
+                    extra.appendChild(disclaimerBox);
+                }
+
+                wrapper.appendChild(extra);
+            }
+
+            return wrapper;
+        }
+
+        async function fetchSessionList({ preserveCurrentSession = false } = {}) {
+            if (!state.currentUser) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/chat/history/${state.currentUser.id}`);
+                const data = await parseResponse(response);
+                const fetchedSessions = Array.isArray(data.sessions) ? data.sessions : [];
+                const cachedSessions = loadCachedSessions();
+                state.allSessions = preserveCurrentSession
+                    ? mergeSessionCollections(cachedSessions, mergeSessionCollections(state.allSessions, fetchedSessions))
+                    : mergeSessionCollections(cachedSessions, fetchedSessions);
+                filterSessionsByRole();
+                persistSessionCache();
+                renderSessionList();
+
+                const activeSessionId = getCurrentSessionId();
+                if (activeSessionId) {
+                    const exists = state.sessions.some((item) => item.session_id === activeSessionId);
+                    if (!exists && !preserveCurrentSession) {
+                        setCurrentSessionId(null);
+                        updateActiveSessionLabel();
+                    }
+                }
+            } catch (error) {
+                renderSessionList();
+                showToast("暂时无法读取会话历史。", "info");
+            }
+        }
+
+        function renderSessionList() {
+            elements.sessionList.innerHTML = "";
+            elements.sessionCount.textContent = String(state.sessions.length);
+            const activeSessionId = getCurrentSessionId();
+
+            if (state.sessions.length === 0) {
+                const empty = document.createElement("p");
+                empty.className = "session-empty";
+                empty.textContent = `${state.selectedRole.name} 还没有独立会话。点击“新建会话”后发出第一条消息，就会单独保存到这个角色页里。`;
+                elements.sessionList.appendChild(empty);
+                return;
+            }
+
+            state.sessions.forEach((session) => {
+                const item = document.createElement("article");
+                item.className = `session-item ${session.session_id === activeSessionId ? "active" : ""}`;
+                item.tabIndex = 0;
+                item.setAttribute("role", "button");
+                item.addEventListener("click", () => loadSession(session.session_id));
+                item.addEventListener("keydown", (event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        loadSession(session.session_id);
+                    }
+                });
+
+                const meta = document.createElement("div");
+                meta.className = "session-meta";
+
+                const title = document.createElement("span");
+                title.textContent = session.session_id === activeSessionId ? "当前会话" : "历史会话";
+
+                const time = document.createElement("span");
+                time.textContent = formatDateTime(session.last_time);
+
+                meta.appendChild(title);
+                meta.appendChild(time);
+
+                const preview = document.createElement("div");
+                preview.className = "session-preview";
+                preview.textContent = session.last_message || "暂无内容";
+
+                const actions = document.createElement("div");
+                actions.className = "session-item-actions";
+
+                const deleteButton = document.createElement("button");
+                deleteButton.type = "button";
+                deleteButton.className = "session-delete-btn";
+                deleteButton.textContent = "删除";
+                deleteButton.addEventListener("click", (event) => {
+                    event.stopPropagation();
+                    deleteSession(session.session_id);
+                });
+
+                actions.appendChild(deleteButton);
+
+                item.appendChild(meta);
+                item.appendChild(preview);
+                item.appendChild(actions);
+                elements.sessionList.appendChild(item);
+            });
+        }
+
+        async function deleteSession(sessionId, { silent = false, skipConfirm = false } = {}) {
+            if (!state.currentUser || !sessionId) return;
+            if (state.isSending) {
+                showToast("请等待当前回复完成后再删除会话。", "info");
+                return false;
+            }
+
+            if (!skipConfirm) {
+                const confirmed = window.confirm("确定删除这条会话记录吗？");
+                if (!confirmed) return false;
+            }
+
+            const isCurrentSession = getCurrentSessionId() === sessionId;
+
+            try {
+                const response = await fetch(`${API_BASE}/chat/history/${state.currentUser.id}/${encodeURIComponent(sessionId)}`, {
+                    method: "DELETE"
+                });
+
+                await parseResponse(response);
+                removeCachedSession(sessionId);
+
+                if (isCurrentSession) {
+                    setCurrentSessionId(null);
+                    clearThread();
+                    showEmptyState();
+                }
+
+                await fetchSessionList({ preserveCurrentSession: !isCurrentSession });
+
+                if (isCurrentSession) {
+                    await restoreRoleSession({ preferLatest: true, createIfMissing: true, silent: true });
+                } else {
+                    renderSessionList();
+                }
+
+                updateActiveSessionLabel();
+                if (!silent) {
+                    showToast("会话已删除。", "success");
+                    updateSessionStatus(isCurrentSession ? "当前会话已删除" : "历史会话已删除");
+                }
+                return true;
+            } catch (error) {
+                if (!silent) {
+                    showToast("删除会话失败，请稍后重试。", "error");
+                }
+                return false;
+            }
+        }
+
+        async function loadSession(sessionId, silent = false) {
+            if (!state.currentUser || !sessionId) return;
+            if (state.isSending && !silent) {
+                showToast("请等待当前回复完成后再切换会话。", "info");
+                return;
+            }
+
+            try {
+                if (!silent) {
+                    updateSessionStatus("正在载入历史会话...");
+                }
+
+                const response = await fetch(`${API_BASE}/chat/history/${state.currentUser.id}?session_id=${encodeURIComponent(sessionId)}`);
+                const data = await parseResponse(response);
+                setCurrentSessionId(sessionId);
+                updateActiveSessionLabel();
+                renderSessionList();
+                clearThread();
+
+                const remoteMessages = Array.isArray(data.messages) ? data.messages : [];
+                const messages = remoteMessages.length > 0 ? remoteMessages : loadCachedSessionMessages(sessionId);
+                if (messages.length === 0) {
+                    showEmptyState();
+                    if (!silent) {
+                        updateSessionStatus("当前会话暂无消息");
+                    }
+                    return;
+                }
+
+                persistSessionMessages(sessionId, messages);
+
+                messages.forEach((item) => {
+                    const isUser = item.role === "user";
+                    if (isUser) {
+                        appendUserMessage(item.content || "", item.timestamp);
+                    } else {
+                        const message = buildMessage({
+                            role: "assistant",
+                            author: state.selectedRole.name,
+                            content: item.content || "",
+                            timestamp: item.timestamp,
+                            citations: Array.isArray(item.citations) ? item.citations : []
+                        });
+                        elements.chatThread.appendChild(message);
+                    }
+                });
+
+                scrollThreadToBottom();
+                hideEmptyState();
+                if (!silent) {
+                    updateSessionStatus("历史会话已载入");
+                }
+            } catch (error) {
+                const cachedMessages = loadCachedSessionMessages(sessionId);
+                if (cachedMessages.length > 0) {
+                    setCurrentSessionId(sessionId);
+                    updateActiveSessionLabel();
+                    renderSessionList();
+                    clearThread();
+
+                    cachedMessages.forEach((item) => {
+                        if (item.role === "user") {
+                            appendUserMessage(item.content || "", item.timestamp);
+                            return;
+                        }
+
+                        const message = buildMessage({
+                            role: "assistant",
+                            author: state.selectedRole.name,
+                            content: item.content || "",
+                            timestamp: item.timestamp,
+                            citations: Array.isArray(item.citations) ? item.citations : []
+                        });
+                        elements.chatThread.appendChild(message);
+                    });
+
+                    scrollThreadToBottom();
+                    hideEmptyState();
+                    if (!silent) {
+                        showToast("已从本地缓存恢复会话。", "info");
+                        updateSessionStatus("已载入本地缓存会话");
+                    }
+                    return;
+                }
+
+                if (!silent) {
+                    showToast("载入历史会话失败。", "error");
+                    updateSessionStatus("历史会话载入失败");
+                }
+            }
+        }
+
+        async function startNewSession(silent = false) {
+            if (state.isSending && !silent) {
+                showToast("请等待当前回复完成后再新建会话。", "info");
+                return;
+            }
+
+            const newSessionId = buildSessionId();
+            const placeholderSession = {
+                session_id: newSessionId,
+                last_message: "新建会话，等待你的问题",
+                last_time: new Date().toISOString()
+            };
+
+            if (state.currentUser) {
+                try {
+                    await fetch(`${API_BASE}/chat/history/${state.currentUser.id}/${encodeURIComponent(newSessionId)}`, {
+                        method: "POST"
+                    });
+                } catch (error) {
+                }
+            }
+
+            setCurrentSessionId(newSessionId);
+            upsertSessionEntry(placeholderSession);
+            if (state.currentUser) {
+                try {
+                    await fetchSessionList({ preserveCurrentSession: true });
+                } catch (error) {
+                }
+            }
+            updateActiveSessionLabel();
+            renderSessionList();
+            clearThread();
+            showEmptyState();
+            if (!silent) {
+                updateSessionStatus("已新建会话，等待你的问题");
+            }
+            elements.messageInput.focus();
+        }
+
+        async function clearCurrentSession() {
+            const currentSessionId = getCurrentSessionId();
+            if (!state.currentUser || !currentSessionId) {
+                showToast("当前没有可清空的会话。", "info");
+                return;
+            }
+
+            if (state.isSending) {
+                showToast("请等待当前回复完成后再清空会话。", "info");
+                return;
+            }
+
+            const confirmed = window.confirm("确定清空当前会话记录吗？");
+            if (!confirmed) return;
+
+            try {
+                const deleted = await deleteSession(currentSessionId, { silent: true, skipConfirm: true });
+                if (!deleted) {
+                    throw new Error("delete failed");
+                }
+                showToast("当前会话已清空。", "success");
+            } catch (error) {
+                showToast("清空会话失败，请稍后重试。", "error");
+            }
+        }
+
+        function clearThread() {
+            elements.chatThread.innerHTML = "";
+            elements.chatThread.appendChild(elements.emptyState);
+        }
+
+        function hideEmptyState() {
+            elements.emptyState.hidden = true;
+        }
+
+        function showEmptyState() {
+            elements.emptyState.hidden = false;
+            if (!elements.chatThread.contains(elements.emptyState)) {
+                elements.chatThread.appendChild(elements.emptyState);
+            }
+        }
+
+        function updateSessionStatus(text) {
+            elements.sessionStatus.textContent = text;
+        }
+
+        function updateActiveSessionLabel() {
+            const sessionId = getCurrentSessionId();
+            elements.activeSessionLabel.textContent = sessionId ? shortSessionId(sessionId) : "尚未创建";
+        }
+
+        function scrollThreadToBottom() {
+            requestAnimationFrame(() => {
+                elements.chatThread.scrollTop = elements.chatThread.scrollHeight;
+            });
+        }
+
+        function setComposerLoading(isLoading) {
+            elements.sendButton.disabled = isLoading;
+            elements.messageInput.disabled = isLoading;
+            elements.sendButton.textContent = isLoading ? "发送中..." : "发送问题";
+            elements.sendButton.classList.toggle("is-loading", isLoading);
+        }
+
+        function setButtonLoading(button, isLoading, loadingText) {
+            const idleText = button.dataset.idleText || button.textContent;
+            if (!button.dataset.idleText) {
+                button.dataset.idleText = idleText;
+            }
+
+            button.disabled = isLoading;
+            button.textContent = isLoading ? loadingText : button.dataset.idleText;
+            button.classList.toggle("is-loading", isLoading);
+        }
+
+        async function fetchWithTimeout(url, options = {}, timeoutMs = CHAT_REQUEST_TIMEOUT_MS) {
+            if (!timeoutMs || timeoutMs <= 0) {
+                return fetch(url, options);
+            }
+
+            const controller = new AbortController();
+            const timer = window.setTimeout(() => controller.abort(), timeoutMs);
+
+            try {
+                return await fetch(url, { ...options, signal: controller.signal });
+            } catch (error) {
+                if (error && error.name === "AbortError") {
+                    throw new Error(`请求超过 ${Math.floor(timeoutMs / 1000)} 秒，系统已停止等待。`);
+                }
+                throw error;
+            } finally {
+                window.clearTimeout(timer);
+            }
+        }
+
+        async function parseResponse(response) {
+            const text = await response.text();
+            let data = {};
+
+            if (text) {
+                try {
+                    data = JSON.parse(text);
+                } catch (error) {
+                    data = { detail: text };
+                }
+            }
+
+            if (!response.ok) {
+                throw new Error(data.detail || "请求失败");
+            }
+
+            return data;
+        }
+
+        function showToast(message, type = "info") {
+            const toast = document.createElement("div");
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            elements.toastStack.appendChild(toast);
+
+            window.setTimeout(() => {
+                toast.remove();
+            }, 3200);
+        }
+
+        function riskText(level) {
+            if (level === "high") return "高风险";
+            if (level === "medium") return "中风险";
+            return "低风险";
+        }
+
+        function updateTodayLabel() {
+            const now = new Date();
+            const formatter = new Intl.DateTimeFormat("zh-CN", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                weekday: "long"
+            });
+            elements.todayLabel.textContent = formatter.format(now);
+        }
+
+        function formatTime(input) {
+            const date = new Date(input);
+            return new Intl.DateTimeFormat("zh-CN", {
+                hour: "2-digit",
+                minute: "2-digit"
+            }).format(date);
+        }
+
+        function formatDateTime(input) {
+            const date = new Date(input);
+            if (Number.isNaN(date.getTime())) return "刚刚";
+            return new Intl.DateTimeFormat("zh-CN", {
+                month: "numeric",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit"
+            }).format(date);
+        }
+
+        function shortSessionId(sessionId) {
+            if (!sessionId) return "尚未创建";
+            if (sessionId.length <= 18) return sessionId;
+            return `${sessionId.slice(0, 8)}...${sessionId.slice(-6)}`;
+        }
+
+        document.addEventListener("DOMContentLoaded", init);
+    </script>
+</body>
+</html>
