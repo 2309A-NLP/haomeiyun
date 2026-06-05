@@ -1,0 +1,28 @@
+# 优化配置
+# 用于检索优化参数调优
+
+retrieval:
+  bm25:
+    k1: 1.5
+    b: 0.75
+  embedding:
+    model: BAAI/bge-base-zh-v1.5
+    dimension: 768
+    device: cpu
+  hybrid:
+    alpha: 0.5  # BM25 vs Vector权重
+  reranker:
+    top_k: 10
+    threshold: 0.3
+
+query_analysis:
+  max_expansion: 3
+  use_synonyms: true
+
+evaluation:
+  metrics:
+    - precision
+    - recall
+    - f1
+    - mrr
+  top_k_values: [1, 3, 5, 10]

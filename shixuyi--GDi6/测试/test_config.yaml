@@ -1,0 +1,14 @@
+# 测试配置
+
+benchmark:
+  qa_file: data/seed/xingtu_manual_qa.json
+  output_dir: query/
+  metrics: [precision, recall, f1, mrr]
+  top_k: [1, 3, 5, 10]
+
+comparison:
+  baselines:
+    - bm25_only
+    - vector_only
+    - hybrid_default
+  output: query/comparison_result.csv
