@@ -1,0 +1,68 @@
+﻿elapsed_s,error,first_token_s,ok,operation,question,response_text,started_at,status_code,worker_id
+110.94048330000078,,53.27979290000076,True,chat,工单2中问题2,"The dataset provided does not include any information about ""工单2中问题2,"" and thus the answer you are looking for is not found in the dataset!The dataset provided does not include any information about ""工单2中问题2,"" and thus the answer you are looking for is not found in the dataset!",2026-06-17T15:43:42,200,7
+110.81687590000001,,53.17955980000261,True,chat,工单2中问题1,"The dataset provided does not contain any information related to ""工单2中问题1."" Therefore, the answer you are looking for is not found in the dataset!The dataset provided does not contain any information related to ""工单2中问题1."" Therefore, the answer you are looking for is not found in the dataset!",2026-06-17T15:43:42,200,14
+110.81832299999951,,53.190575999997236,True,chat,工单2中问题1,"Based on the knowledge base provided, there is no information about a ""工单2"" or ""问题1."" Therefore, I cannot summarize the content of the dataset or list any data relevant to this question. The answer you are looking for is not found in the dataset!Based on the knowledge base provided, there is no information about a ""工单2"" or ""问题1."" Therefore, I cannot summarize the content of the dataset or list any data relevant to this question. The answer you are looking for is not found in the dataset!",2026-06-17T15:43:42,200,16
+111.14529849999963,,53.59187839999868,True,chat,工单2中问题2,The answer you are looking for is not found in the dataset!The answer you are looking for is not found in the dataset!,2026-06-17T15:43:42,200,1
+111.06197240000256,,53.580651399999624,True,chat,工单2中问题2,The answer you are looking for is not found in the dataset!The answer you are looking for is not found in the dataset!,2026-06-17T15:43:42,200,3
+111.07328190000044,,53.428578399998514,True,chat,工单2中问题2,The answer you are looking for is not found in the dataset!The answer you are looking for is not found in the dataset!,2026-06-17T15:43:42,200,11
+111.139462799998,,53.537130400000024,True,chat,工单2中问题1,The answer you are looking for is not found in the dataset!The answer you are looking for is not found in the dataset!,2026-06-17T15:43:42,200,8
+156.4620763999992,,48.51686979999795,True,chat,工单2中问题1,"工单2中问题1的具体内容没有提供，因此无法进行回答。请提供问题1的具体内容，以便我能够为您总结相关信息或提供答案。如果没有具体问题，那么根据您提供的知识库内容，以下是一些可能的问题和答案的示例：
+
+**问题示例1：**
+RAGFlow的主要目的是什么？
+
+**答案示例1：**
+RAGFlow的主要目的是将原始文档转化为大型语言模型可靠上下文，以便构建能够使用私人文件回答问题的AI助手，同时保持答案与原始材料相关。它通过将文档解析、清理、分块和索引以供搜索来实现这一目的。
+
+**问题示例2：**
+RAG系统的工作流程是怎样的？
+
+**答案示例2：**
+RAG系统的工作流程包括四个步骤：首先，您将内容导入并创建索引，通常使用向量存储中的嵌入，有时结合关键字搜索。其次，用户提出问题。第三，系统检索最佳匹配的段落。最后，模型根据这些段落生成响应。
+
+如果问题1与这些内容相关，请提供具体问题内容以便回答。如果问题与提供的知识库内容无关，那么答案是：
+
+The answer you are looking for is not found in the dataset!工单2中问题1的具体内容没有提供，因此无法进行回答。请提供问题1的具体内容，以便我能够为您总结相关信息或提供答案。如果没有具体问题，那么根据您提供的知识库内容，以下是一些可能的问题和答案的示例：
+
+**问题示例1：**
+RAGFlow的主要目的是什么？
+
+**答案示例1：**
+RAGFlow的主要目的是将原始文档转化为大型语言模型可靠上下文，以便构建能够使用私人文件回答问题的AI助手，同时保持答案与原始材料相关。它通过将文档解析、清理、分块和索引以供搜索来实现这一目的。
+
+**问题示例2：**
+RAG系统的工作流程是怎样的？
+
+**答案示例2：**
+RAG系统的工作流程包括四个步骤：首先，您将内容导入并创建索引，通常使用向量存储中的嵌入，有时结合关键字搜索。其次，用户提出问题。第三，系统检索最佳匹配的段落。最后，模型根据这些段落生成响应。
+
+如果问题1与这些内容相关，请提供具体问题内容以便回答。如果问题与提供的知识库内容无关，那么答案是：
+
+The answer you are looking for is not found in the dataset!",2026-06-17T15:43:42,200,18
+156.62400499999785,,53.47680760000003,True,chat,工单2中问题1,"Based on the knowledge base provided, there is no specific ""工单2"" or ""问题1"" mentioned. The information given revolves around Retrieval-Augmented Generation (RAG), its purpose, and the company InfiniFlow. If ""工单2"" and ""问题1"" are references to specific details or questions within the context of this knowledge base, they have not been provided. Therefore, without further information or context, I cannot answer ""问题1"" from ""工单2.""
+
+The answer you are looking for is not found in the dataset!Based on the knowledge base provided, there is no specific ""工单2"" or ""问题1"" mentioned. The information given revolves around Retrieval-Augmented Generation (RAG), its purpose, and the company InfiniFlow [ID:2]. If ""工单2"" and ""问题1"" are references to specific details or questions within the context of this knowledge base, they have not been provided. Therefore, without further information or context, I cannot answer ""问题1"" from ""工单2.""
+
+The answer you are looking for is not found in the dataset!",2026-06-17T15:43:42,200,10
+42.64867289999893,,11.97820579999825,True,chat,工单2中问题1,"The dataset does not contain any information related to ""工单2中问题1."" The answer you are looking for is not found in the dataset!The dataset does not contain any information related to ""工单2中问题1."" The answer you are looking for is not found in the dataset!",2026-06-17T15:43:42,200,0
+123.1001608000006,,116.19585200000074,True,chat,工单2中问题2,The answer you are looking for is not found in the dataset!The answer you are looking for is not found in the dataset!,2026-06-17T15:44:25,200,0
+42.5206838999984,,11.728604299998551,True,chat,工单2中问题1,"The dataset provided does not contain any information related to ""工单2中问题1."" The content of the dataset is focused on the concept of Retrieval-Augmented Generation (RAG), the purpose of RAGFlow, and the history of InfiniFlow, the company behind these projects. Therefore, the answer you are looking for is not found in the dataset!The dataset provided does not contain any information related to ""工单2中问题1."" The content of the dataset is focused on the concept of Retrieval-Augmented Generation (RAG), the purpose of RAGFlow, and the history of InfiniFlow, the company behind these projects [ID:2]. Therefore, the answer you are looking for is not found in the dataset!",2026-06-17T15:43:42,200,2
+147.3708974000001,,116.25717029999942,True,chat,工单2中问题2,The answer you are looking for is not found in the dataset!The answer you are looking for is not found in the dataset!,2026-06-17T15:44:24,200,2
+42.38525920000029,,11.645800499998586,True,chat,工单2中问题1,工单2中问题1的具体内容未提供，因此无法给出针对性的回答。如果您能提供工单2中问题1的具体内容，我将能够为您进行详细解答。The answer you are looking for is not found in the dataset!工单2中问题1的具体内容未提供，因此无法给出针对性的回答。如果您能提供工单2中问题1的具体内容，我将能够为您进行详细解答。The answer you are looking for is not found in the dataset!,2026-06-17T15:43:42,200,4
+147.37146349999966,,122.94330379999883,True,chat,工单2中问题2,The answer you are looking for is not found in the dataset!The answer you are looking for is not found in the dataset!,2026-06-17T15:44:24,200,4
+42.2327151999998,,11.571267700001044,True,chat,工单2中问题2,The answer you are looking for is not found in the dataset!The answer you are looking for is not found in the dataset!,2026-06-17T15:43:42,200,17
+147.36470340000233,,122.94385950000287,True,chat,工单2中问题1,"I'm sorry, but I need more context to understand the question you're referring to as ""工单2中问题1."" Could you please provide the specific details or content of the question from the ""工单2"" dataset or chat history? This will help me to summarize the content and answer your question appropriately.I'm sorry, but I need more context to understand the question you're referring to as ""工单2中问题1."" Could you please provide the specific details or content of the question from the ""工单2"" dataset or chat history? This will help me to summarize the content and answer your question appropriately. [ID:0]",2026-06-17T15:44:24,200,17
+42.32859490000192,,11.649169100001018,True,chat,工单2中问题1,The answer you are looking for is not found in the dataset!The answer you are looking for is not found in the dataset!,2026-06-17T15:43:42,200,12
+147.32915329999742,,122.96179819999816,True,chat,工单2中问题2,The answer you are looking for is not found in the dataset!The answer you are looking for is not found in the dataset!,2026-06-17T15:44:25,200,12
+11.779054599999654,,7.227962400000251,True,chat,工单2中问题1,The answer you are looking for is not found in the dataset!The answer you are looking for is not found in the dataset!,2026-06-17T15:43:42,200,6
+177.97844559999794,,153.6729478999987,True,chat,工单2中问题2,The answer you are looking for is not found in the dataset!The answer you are looking for is not found in the dataset!,2026-06-17T15:43:54,200,6
+42.36005660000228,,11.674893499999598,True,chat,工单2中问题2,The answer you are looking for is not found in the dataset!The answer you are looking for is not found in the dataset!,2026-06-17T15:43:42,200,9
+159.94226560000243,,123.0959204000028,True,chat,工单2中问题1,"The dataset provided does not include any information related to ""工单2中问题1,"" so the answer you are looking for is not found in the dataset!The dataset provided does not include any information related to ""工单2中问题1,"" so the answer you are looking for is not found in the dataset!",2026-06-17T15:44:24,200,9
+42.23434129999805,,11.433950599999662,True,chat,工单2中问题2,The answer you are looking for is not found in the dataset!The answer you are looking for is not found in the dataset!,2026-06-17T15:43:42,200,15
+159.95502950000082,,115.95991150000191,True,chat,工单2中问题1,"The dataset does not provide specific details regarding ""工单2中问题1."" Therefore, The answer you are looking for is not found in the dataset!The dataset does not provide specific details regarding ""工单2中问题1."" Therefore, The answer you are looking for is not found in the dataset!",2026-06-17T15:44:24,200,15
+46.44892630000322,,42.31191410000247,True,chat,工单2中问题2,The answer you are looking for is not found in the dataset!The answer you are looking for is not found in the dataset!,2026-06-17T15:43:42,200,13
+155.78496529999757,,118.90874540000004,True,chat,工单2中问题1,"The dataset does not provide specific information about ""工单2中问题1."" The content of the dataset is focused on the definition and applications of Retrieval-Augmented Generation (RAG), including the RAGFlow engine and the history of InfiniFlow, the company behind these projects. Since there is no relevant information about a specific ""工单2中问题1"" in the dataset, the answer you are looking for is not found in the dataset!The dataset does not provide specific information about ""工单2中问题1."" The content of the dataset is focused on the definition and applications of Retrieval-Augmented Generation (RAG), including the RAGFlow engine and the history of InfiniFlow, the company behind these projects [ID:2]. Since there is no relevant information about a specific ""工单2中问题1"" in the dataset, the answer you are looking for is not found in the dataset!",2026-06-17T15:44:29,200,13
+42.372673300000315,,11.554328099999111,True,chat,工单2中问题2,The answer you are looking for is not found in the dataset!The answer you are looking for is not found in the dataset!,2026-06-17T15:43:42,200,5
+159.97611929999766,,123.02516879999894,True,chat,工单2中问题1,工单2中问题1的具体内容未提供，因此无法直接回答该问题。如果您能提供更多关于工单2中问题1的细节，我将能够更好地帮助您。例如，问题1是关于某个具体话题、数据查询、或者服务请求的，请提供相关信息。如果没有更多信息，我无法进行回答。The answer you are looking for is not found in the dataset!工单2中问题1的具体内容未提供，因此无法直接回答该问题。如果您能提供更多关于工单2中问题1的细节，我将能够更好地帮助您。例如，问题1是关于某个具体话题、数据查询、或者服务请求的，请提供相关信息。如果没有更多信息，我无法进行回答。The answer you are looking for is not found in the dataset!,2026-06-17T15:44:24,200,5
+53.37713140000051,,48.56611469999916,True,chat,工单2中问题2,The answer you are looking for is not found in the dataset!The answer you are looking for is not found in the dataset!,2026-06-17T15:43:42,200,19
+157.9908687999996,,152.47707360000277,True,chat,工单2中问题1,The answer you are looking for is not found in the dataset!The answer you are looking for is not found in the dataset!,2026-06-17T15:44:36,200,19
